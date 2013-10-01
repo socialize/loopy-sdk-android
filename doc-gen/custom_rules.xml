@@ -25,7 +25,7 @@
 <project name="loopy-sdk-docs" default="doc">
 
     <property file="project.properties"/>
-    <property name="ghpages.path" value="../ghpages"/>
+    <property file="../../private/scripts/build.properties"/>
 
     <macrodef name="git">
         <attribute name="command" />
