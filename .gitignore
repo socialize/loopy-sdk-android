@@ -1,0 +1,12 @@
+.DS_Store
+.idea/
+gen/
+local.properties
+out/
+bin/
+build/
+target/
+version.properties
+custom_rules.xml
+private
+*.iml
