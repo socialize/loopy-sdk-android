@@ -3,38 +3,6 @@
 
     <target name="test-with-results" depends="clean,emma,debug,install,test,pull-test-results,pull-coverage-results"/>
 
-    <!-- We need to swap out the compiled JAR and swap in the libary project for the tests only -->
-    <!--<target name="move-loopy-jar">-->
-        <!--<delete dir="/tmp/loopyjars"/>-->
-        <!--<mkdir dir="/tmp/loopyjars"/>-->
-
-        <!--<move todir="/tmp/loopyjars">-->
-            <!--<fileset dir="../../../loopy-sdk-public/sdk/libs">-->
-                <!--<include name="**/loopy*.jar"/>-->
-            <!--</fileset>-->
-        <!--</move>-->
-
-        <!--&lt;!&ndash; Now add the project reference to the public project so we can compile &ndash;&gt;-->
-        <!--<propertyfile file="../../../loopy-sdk-public/sdk/project.properties">-->
-            <!--<entry key="android.library.reference.1" value="../../loopy-sdk-private/mobile/sdk"/>-->
-        <!--</propertyfile>-->
-
-    <!--</target>-->
-
-    <!--<target name="unmove-loopy-jar">-->
-        <!--<move todir="../../../loopy-sdk-public/sdk/libs">-->
-            <!--<fileset dir="/tmp/loopyjars">-->
-                <!--<include name="**/loopy*.jar"/>-->
-            <!--</fileset>-->
-        <!--</move>-->
-        <!--<delete dir="/tmp/loopyjars"/>-->
-
-        <!--&lt;!&ndash; Now remove the project reference from the public project &ndash;&gt;-->
-        <!--<propertyfile file="../../../loopy-sdk-public/sdk/project.properties">-->
-            <!--<entry key="android.library.reference.1" operation="del"/>-->
-        <!--</propertyfile>-->
-    <!--</target>-->
-
     <target name="pull-test-results">
         <delete dir="test-results"/>
         <mkdir dir="test-results"/>

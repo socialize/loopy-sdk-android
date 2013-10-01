@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Sharing Non-URL Content &mdash; Loopy Android SDK 1_0_rc1 (b105) documentation</title>
+    
+    <link rel="stylesheet" href="static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1_0_rc1 (b105)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="shortcut icon" href="static/favicon.ico"/>
+    <link rel="top" title="Loopy Android SDK 1_0_rc1 (b105) documentation" href="index.html?v=1_0_rc1" />
+    <link rel="next" title="Examples" href="examples.html?v=1_0_rc1" />
+    <link rel="prev" title="Using a Custom Share UI" href="custom_share.html?v=1_0_rc1" />
+<script type="text/javascript" src="static/loopy.js"></script>
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="examples.html?v=1_0_rc1" title="Examples"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="custom_share.html?v=1_0_rc1" title="Using a Custom Share UI"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html?v=1_0_rc1">Loopy Android SDK 1_0_rc1 (b105) documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="sharing-non-url-content">
+<h1>Sharing Non-URL Content<a class="headerlink" href="#sharing-non-url-content" title="Permalink to this headline">¶</a></h1>
+<div class="block-padded container">
+<p>If your app has content that does not live on the web (i.e. it does not have URL)
+you can still allow your users to share this content using a non-URL share.</p>
+<p>When the share occurs we will create a webpage for you that renders the content you
+include in the share item.</p>
+<p>Non-URL components of the share item correspond to <a href="http://ogp.me/" target="_blank">Open Graph</a>&nbsp;&#10138; tags automatically added
+to the page we create so that post to social networks like Facebook render with the correct
+text and images you intend.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><br /> You can also use the <strong>Item</strong> described below even if you <em>do</em> have a URL to add more meaning to your analytics</p>
+</div>
+</div>
+<div class="block container">
+<img alt="images/og_logo.png" class="align-center" src="images/og_logo.png" />
+</div>
+<div class="clear container">
+<p>The example below is the same as the <a class="reference internal" href="share_dialog.html?v=1_0_rc1"><em>Share Dialog</em></a> example but rather than using a URL for
+the share data you would use an <strong>Item</strong></p>
+<p><strong>Instead</strong> of this:</p>
+<div class="strikethrough container">
+<div class="highlight-java"><div class="highlight"><pre><span class="kd">final</span> <span class="n">String</span> <span class="n">urlToShare</span> <span class="o">=</span> <span class="s">&quot;http://www.sharethis.com&quot;</span><span class="o">;</span>
+</pre></div>
+</div>
+</div>
+<p>Use this:</p>
+<div class="highlight-java"><div class="highlight"><pre><span class="c1">// This would be the item you are wanting to share...</span>
+<span class="kd">final</span> <span class="n">Item</span> <span class="n">item</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Item</span><span class="o">();</span>
+
+<span class="c1">// The title corresponds to the og:title meta tag element</span>
+<span class="c1">// One of title OR url are REQUIRED</span>
+<span class="n">item</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;My Article&quot;</span><span class="o">);</span>
+
+<span class="c1">// The description corresponds to the og:description meta tag element</span>
+<span class="n">item</span><span class="o">.</span><span class="na">setDescription</span><span class="o">(</span><span class="s">&quot;The description of my article&quot;</span><span class="o">);</span>
+
+<span class="c1">// Image, video and type are also supported</span>
+<span class="n">item</span><span class="o">.</span><span class="na">setImageUrl</span><span class="o">(</span><span class="s">&quot;...&quot;</span><span class="o">);</span>
+<span class="n">item</span><span class="o">.</span><span class="na">setVideoUrl</span><span class="o">(</span><span class="s">&quot;...&quot;</span><span class="o">);</span>
+<span class="n">item</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="s">&quot;...&quot;</span><span class="o">);</span>
+
+<span class="c1">// You can also add custom tags to the content</span>
+<span class="n">item</span><span class="o">.</span><span class="na">addTag</span><span class="o">(</span><span class="s">&quot;Entertainment&quot;</span><span class="o">);</span>
+<span class="n">item</span><span class="o">.</span><span class="na">addTag</span><span class="o">(</span><span class="s">&quot;Sports&quot;</span><span class="o">);</span>
+</pre></div>
+</div>
+<p>The full example looks like this:</p>
+<div class="highlight-java"><div class="highlight"><pre><span class="kd">final</span> <span class="n">Activity</span> <span class="n">context</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+
+<span class="c1">// This would be the item you are wanting to share...</span>
+<span class="kd">final</span> <span class="n">Item</span> <span class="n">item</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Item</span><span class="o">();</span>
+
+<span class="c1">// The title corresponds to the og:title meta tag element</span>
+<span class="c1">// One of title OR url are REQUIRED</span>
+<span class="n">item</span><span class="o">.</span><span class="na">setTitle</span><span class="o">(</span><span class="s">&quot;My article&quot;</span><span class="o">);</span>
+
+<span class="c1">// The description corresponds to the og:description meta tag element</span>
+<span class="n">item</span><span class="o">.</span><span class="na">setDescription</span><span class="o">(</span><span class="s">&quot;Something to do with my item&quot;</span><span class="o">);</span>
+
+<span class="c1">// Set the content type for the intent (*/* means ALL)</span>
+<span class="kd">final</span> <span class="n">String</span> <span class="n">contentType</span> <span class="o">=</span> <span class="s">&quot;*/*&quot;</span><span class="o">;</span>                       <span class="c1">// &lt;== TODO: Set this</span>
+
+<span class="c1">// Set the title for the dialog</span>
+<span class="kd">final</span> <span class="n">String</span> <span class="n">dialogTitle</span> <span class="o">=</span> <span class="s">&quot;Share to...&quot;</span><span class="o">;</span>               <span class="c1">// &lt;== TODO: Set this</span>
+
+<span class="c1">// Create an intent.  The URL to be shared will be available in the callback below</span>
+<span class="kd">final</span> <span class="n">Intent</span> <span class="n">shareIntent</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Intent</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">ACTION_SEND</span><span class="o">);</span>
+
+<span class="c1">// Set the conent type for the intent (*/* means ALL)</span>
+<span class="n">shareIntent</span><span class="o">.</span><span class="na">setType</span><span class="o">(</span><span class="n">contentType</span><span class="o">);</span>
+
+<span class="c1">// Grab a reference to your share button</span>
+<span class="n">Button</span> <span class="n">shareButton</span> <span class="o">=</span> <span class="o">(</span><span class="n">Button</span><span class="o">)</span> <span class="n">findViewById</span><span class="o">(</span><span class="n">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">btnShare</span><span class="o">);</span>
+
+<span class="c1">// Trigger the share dialog on click</span>
+<span class="n">shareButton</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">new</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="c1">// Call the &quot;showShareDialog&quot; endpoint to render the share dialog</span>
+        <span class="c1">// The listener is used to set the trackable URL on to the share intent.</span>
+        <span class="n">Loopy</span><span class="o">.</span><span class="na">showShareDialog</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">&quot;Share to...&quot;</span><span class="o">,</span> <span class="n">item</span><span class="o">,</span> <span class="n">shareIntent</span><span class="o">,</span> <span class="k">new</span> <span class="n">ShareDialogListener</span><span class="o">()</span> <span class="o">{</span>
+
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onLinkGenerated</span><span class="o">(</span><span class="n">Item</span> <span class="n">item</span><span class="o">,</span> <span class="n">Throwable</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">error</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="c1">// We got a tracking shortlink ok, set it in the body of the share (or wherever you like)</span>
+                    <span class="n">shareIntent</span><span class="o">.</span><span class="na">putExtra</span><span class="o">(</span><span class="n">Intent</span><span class="o">.</span><span class="na">EXTRA_TEXT</span><span class="o">,</span> <span class="n">item</span><span class="o">.</span><span class="na">getShortlink</span><span class="o">());</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+    <span class="o">}</span>
+<span class="o">});</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html?v=1_0_rc1">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html?v=1_0_rc1">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="share_dialog.html?v=1_0_rc1">Using the Share Dialog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="share_menu.html?v=1_0_rc1">Using the Share Menu</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_share.html?v=1_0_rc1">Using a Custom Share UI</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Sharing Non-URL Content</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html?v=1_0_rc1">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_help.html?v=1_0_rc1">Getting Help</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="examples.html?v=1_0_rc1" title="Examples"
+             >next</a></li>
+        <li class="right" >
+          <a href="custom_share.html?v=1_0_rc1" title="Using a Custom Share UI"
+             >previous</a> |</li>
+        <li><a href="index.html?v=1_0_rc1">Loopy Android SDK 1_0_rc1 (b105) documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, ShareThis.
+    </div>
+  </body>
+</html>

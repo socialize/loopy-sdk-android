@@ -22,13 +22,10 @@
   ~  * THE SOFTWARE.
   ~  */
   -->
-
 <project name="loopy-sdk-docs" default="doc">
 
-    <property file="../../public/sdk/version.properties"/>
-    <property file="../../public/sdk/ant.properties"/>
     <property file="project.properties"/>
-    <property file="../../public/sdk/local.properties"/>
+    <property name="ghpages.path" value="../ghpages"/>
 
     <macrodef name="git">
         <attribute name="command" />
@@ -94,8 +91,8 @@
     </target>
 
     <target name="_set_docpaths">
-        <property name="doc.classpath" value="../public/sdk/bin/classes"/>
-        <property name="doc.sourcepath" value="../public/sdk/src"/>
+        <property name="doc.classpath" value="../sdk/bin/classes"/>
+        <property name="doc.sourcepath" value="../sdk/src"/>
         <property name="doc.outputpath" value="${loopy.build.dir}"/>
         <delete dir="${doc.outputpath}"/>
         <mkdir dir="${doc.outputpath}"/>

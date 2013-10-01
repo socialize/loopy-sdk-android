@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using a Custom Share UI &mdash; Loopy Android SDK 1_0_rc1 (b105) documentation</title>
+    
+    <link rel="stylesheet" href="static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '1_0_rc1 (b105)',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  false
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/underscore.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="shortcut icon" href="static/favicon.ico"/>
+    <link rel="top" title="Loopy Android SDK 1_0_rc1 (b105) documentation" href="index.html?v=1_0_rc1" />
+    <link rel="next" title="Sharing Non-URL Content" href="non_url.html?v=1_0_rc1" />
+    <link rel="prev" title="Using the Share Menu" href="share_menu.html?v=1_0_rc1" />
+<script type="text/javascript" src="static/loopy.js"></script>
+
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="non_url.html?v=1_0_rc1" title="Sharing Non-URL Content"
+             accesskey="N">next</a></li>
+        <li class="right" >
+          <a href="share_menu.html?v=1_0_rc1" title="Using the Share Menu"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html?v=1_0_rc1">Loopy Android SDK 1_0_rc1 (b105) documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-a-custom-share-ui">
+<h1>Using a Custom Share UI<a class="headerlink" href="#using-a-custom-share-ui" title="Permalink to this headline">¶</a></h1>
+<div class="block-padded container">
+<p>If you have your own custom implementation of a share UI you can still benefit from the Loopy ™ social
+analytics platform by creating a trackable URL to be shared.</p>
+<p>Simply use the <strong>shorten</strong> method to create a trackable URL for sharing when the user executes a share.</p>
+</div>
+<div class="block container">
+<img alt="images/custom_ui.png" class="align-center" src="images/custom_ui.png" />
+</div>
+<div class="clear container">
+<p>When the user elects to share using your custom UI:</p>
+<blockquote>
+<div><div class="highlight-java"><div class="highlight"><pre><span class="kd">final</span> <span class="n">String</span> <span class="n">originalUrl</span> <span class="o">=</span> <span class="s">&quot;http://www.sharethis.com&quot;</span><span class="o">;</span> <span class="c1">// &lt;== The original URL you are sharing.</span>
+
+<span class="c1">// Hide/Disable your UI until we create a shortlink</span>
+<span class="n">shareButton</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+
+<span class="c1">// Generate a trackable shortlink</span>
+<span class="n">Loopy</span><span class="o">.</span><span class="na">shorten</span><span class="o">(</span><span class="n">originalUrl</span><span class="o">,</span> <span class="k">new</span> <span class="n">ShareCallback</span><span class="o">()</span> <span class="o">{</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onResult</span><span class="o">(</span><span class="kd">final</span> <span class="n">Item</span> <span class="n">item</span><span class="o">,</span> <span class="kd">final</span> <span class="n">Throwable</span> <span class="n">error</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="c1">// You can now use the &quot;shortlink&quot; version of your original URL</span>
+
+        <span class="c1">// Set your onclick event and report the share</span>
+        <span class="n">shareButton</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="k">new</span> <span class="n">View</span><span class="o">.</span><span class="na">OnClickListener</span><span class="o">()</span> <span class="o">{</span>
+
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onClick</span><span class="o">(</span><span class="n">View</span> <span class="n">v</span><span class="o">)</span> <span class="o">{</span>
+
+                <span class="c1">// The &quot;channel&quot; corresponds to the medium the user chose to share through.</span>
+                <span class="n">String</span> <span class="n">channel</span> <span class="o">=</span> <span class="n">Loopy</span><span class="o">.</span><span class="na">Channel</span><span class="o">.</span><span class="na">FACEBOOK</span><span class="o">;</span> <span class="c1">// TODO: &lt;== Set this</span>
+
+                <span class="c1">// Don&#39;t forget to report the share!</span>
+                <span class="n">Loopy</span><span class="o">.</span><span class="na">reportShare</span><span class="o">(</span><span class="n">item</span><span class="o">,</span> <span class="n">channel</span><span class="o">);</span>
+
+                <span class="c1">// This will be the URL that is ultimately shared</span>
+                <span class="n">String</span> <span class="n">urlToShare</span><span class="o">;</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="n">error</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="c1">// Now execute the share as you normally would</span>
+                    <span class="n">urlToShare</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="na">getShortlink</span><span class="o">();</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="c1">// We couldn&#39;t get a shorlink, so revert to the original URL</span>
+                    <span class="n">urlToShare</span> <span class="o">=</span> <span class="n">originalUrl</span><span class="o">;</span>
+                <span class="o">}</span>
+
+                <span class="c1">// YOUR CODE HERE &lt;== TODO: Implement this</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+        <span class="c1">// Finally ensure the UI is enabled/visible</span>
+        <span class="n">shareButton</span><span class="o">.</span><span class="na">setEnabled</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+    <span class="o">}</span>
+<span class="o">});</span>
+</pre></div>
+</div>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="index.html?v=1_0_rc1">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html?v=1_0_rc1">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="share_dialog.html?v=1_0_rc1">Using the Share Dialog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="share_menu.html?v=1_0_rc1">Using the Share Menu</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Using a Custom Share UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="non_url.html?v=1_0_rc1">Sharing Non-URL Content</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html?v=1_0_rc1">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_help.html?v=1_0_rc1">Getting Help</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="non_url.html?v=1_0_rc1" title="Sharing Non-URL Content"
+             >next</a></li>
+        <li class="right" >
+          <a href="share_menu.html?v=1_0_rc1" title="Using the Share Menu"
+             >previous</a> |</li>
+        <li><a href="index.html?v=1_0_rc1">Loopy Android SDK 1_0_rc1 (b105) documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, ShareThis.
+    </div>
+  </body>
+</html>
