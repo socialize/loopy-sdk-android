@@ -191,7 +191,7 @@
     <target name="doc" depends="_set_version, _set_docpaths, javadoc, _sphinx"/>
 
     <target name="publish-docs" depends="_set_buildnumber, _set_version, doc">
-        <copy todir="${ghpages.path}" overwrite="true">
+        <copy todir="${ghpages.path}" overwrite="true" verbose="true">
             <fileset dir="${doc.outputpath}" includes="**"/>
         </copy>
 
