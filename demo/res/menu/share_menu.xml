@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--begin-snippet-0-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:sharethis="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/action_share"
+          android:icon="@android:drawable/ic_menu_share"
+          sharethis:showAsAction="ifRoom"
+          sharethis:actionProviderClass="android.support.v7.widget.ShareActionProvider"/>
+</menu>
+<!--end-snippet-0-->
