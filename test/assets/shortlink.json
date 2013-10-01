@@ -1,0 +1,16 @@
+{
+    "stdid": "foobar_sharethis_id",
+    "timestamp": 1234567890,
+    "item" : {
+        "type": "foobar_type",
+        "url" : "foobar_url",
+        "title" : "foobar_title",
+        "image" : "foobar_image", 
+        "description" : "foobar_description",
+        "video" : "foobar_video"
+    },
+    "tags" : [
+        "sports",
+        "entertainment"
+    ]
+}

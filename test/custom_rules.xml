@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="loopy_test_custom">
+
+    <target name="test-with-results" depends="clean,emma,debug,install,test,pull-test-results,pull-coverage-results"/>
+
+    <!-- We need to swap out the compiled JAR and swap in the libary project for the tests only -->
+    <!--<target name="move-loopy-jar">-->
+        <!--<delete dir="/tmp/loopyjars"/>-->
+        <!--<mkdir dir="/tmp/loopyjars"/>-->
+
+        <!--<move todir="/tmp/loopyjars">-->
+            <!--<fileset dir="../../../loopy-sdk-public/sdk/libs">-->
+                <!--<include name="**/loopy*.jar"/>-->
+            <!--</fileset>-->
+        <!--</move>-->
+
+        <!--&lt;!&ndash; Now add the project reference to the public project so we can compile &ndash;&gt;-->
+        <!--<propertyfile file="../../../loopy-sdk-public/sdk/project.properties">-->
+            <!--<entry key="android.library.reference.1" value="../../loopy-sdk-private/mobile/sdk"/>-->
+        <!--</propertyfile>-->
+
+    <!--</target>-->
+
+    <!--<target name="unmove-loopy-jar">-->
+        <!--<move todir="../../../loopy-sdk-public/sdk/libs">-->
+            <!--<fileset dir="/tmp/loopyjars">-->
+                <!--<include name="**/loopy*.jar"/>-->
+            <!--</fileset>-->
+        <!--</move>-->
+        <!--<delete dir="/tmp/loopyjars"/>-->
+
+        <!--&lt;!&ndash; Now remove the project reference from the public project &ndash;&gt;-->
+        <!--<propertyfile file="../../../loopy-sdk-public/sdk/project.properties">-->
+            <!--<entry key="android.library.reference.1" operation="del"/>-->
+        <!--</propertyfile>-->
+    <!--</target>-->
+
+    <target name="pull-test-results">
+        <delete dir="test-results"/>
+        <mkdir dir="test-results"/>
+        <echo level="info">Setting permission to download the test files...</echo>
+        <exec executable="${adb}" failonerror="true">
+            <arg line="${adb.device.arg}" />
+            <arg value="shell" />
+            <arg value="run-as" />
+            <arg value="com.sharethis.loopy.test" />
+            <arg value="chmod" />
+            <arg value="644" />
+            <arg value="/data/data/com.sharethis.loopy.test/ALL-TEST.xml" />
+        </exec>
+
+        <exec executable="${adb}" failonerror="true" dir="test-results">
+            <arg line="${adb.device.arg}" />
+            <arg value="pull" />
+            <arg value="/data/data/com.sharethis.loopy.test/ALL-TEST.xml" />
+        </exec>
+    </target>
+
+    <target name="pull-coverage-results">
+
+        <delete dir="coverage-results"/>
+        <mkdir dir="coverage-results"/>
+
+        <echo level="info">Copying coverage files</echo>
+
+        <mkdir dir="coverage-results/_files"/>
+        <move todir="coverage-results/_files">
+            <fileset dir="bin/_files"/>
+        </move>
+
+        <move file="bin/coverage.html" todir="coverage-results"/>
+        <move file="bin/coverage.txt" todir="coverage-results"/>
+        <move file="bin/coverage.xml" todir="coverage-results"/>
+    </target>
+
+    <target name="dump-logcat">
+        <exec executable="${adb}" failonerror="true">
+            <arg line="${adb.device.arg}" />
+            <arg value="logcat" />
+            <arg value="-d" />
+            <arg value="*:W" />
+        </exec>
+    </target>
+
+</project>

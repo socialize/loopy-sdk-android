@@ -1,0 +1,38 @@
+
+<!--begin-snippet-0-->
+mvn install:install-file \
+    -Dfile=${sdk.apklib} \
+    -DgroupId=${loopy.artifact.group} \
+    -DartifactId=${loopy.artifact.name} \
+    -Dversion=${loopy.version} \
+    -Dpackaging=apklib
+<!--end-snippet-0-->
+
+<!--begin-snippet-1-->
+<dependency>
+   <groupId>${loopy.artifact.group}</groupId>
+   <artifactId>${loopy.artifact.name}</artifactId>
+   <version>${loopy.version}</version>
+   <type>apklib</type>
+</dependency>
+<!--end-snippet-1-->
+
+<!--begin-snippet-2-->
+<plugin>
+    <groupId>com.jayway.maven.plugins.android.generation2</groupId>
+    <artifactId>android-maven-plugin</artifactId>
+    <version>3.0.0</version>
+</plugin>
+<!--end-snippet-2-->
+
+
+<!--begin-snippet-3-->
+include ':libraries:${loopy.sdk.lname}', ':HelloWorld'
+<!--end-snippet-3-->
+
+
+<!--begin-snippet-4-->
+dependencies {
+    compile project(':libraries:${loopy.sdk.lname}')
+}
+<!--end-snippet-4-->

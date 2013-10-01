@@ -1,0 +1,30 @@
+{
+    "stdid": "foobar_sharethis_id",
+    "timestamp": 1234567890,
+    "device" : {
+        "model" : "foobar_model",
+        "os" : "android",
+        "osv" : "123",
+        "carrier" : "foobar_carrier",
+        "wifi" : "off",
+        "geo": {
+            "lat" : 123.456,
+            "lon" : 789.000
+        }
+    },
+    "app" : {
+        "id" : "com.socialize.foobar",
+        "name" : "FooBar",
+        "version": "123.4"
+    },
+    "event": {
+        "type" : "share",
+        "meta" : {
+            "foo" : "bar",
+            "foo2" : "bar2"
+        }
+    },
+    "client" : {
+        "lang" : "java"
+    }
+}

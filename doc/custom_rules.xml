@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ /*
+  ~  * Copyright (c) 2013 ShareThis Inc.
+  ~  *
+  ~  * Permission is hereby granted, free of charge, to any person obtaining a copy
+  ~  * of this software and associated documentation files (the "Software"), to deal
+  ~  * in the Software without restriction, including without limitation the rights
+  ~  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  ~  * copies of the Software, and to permit persons to whom the Software is
+  ~  * furnished to do so, subject to the following conditions:
+  ~  *
+  ~  * The above copyright notice and this permission notice shall be included in
+  ~  * all copies or substantial portions of the Software.
+  ~  *
+  ~  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  ~  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  ~  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  ~  * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  ~  * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  ~  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+  ~  * THE SOFTWARE.
+  ~  */
+  -->
+
+<project name="loopy-sdk-docs" default="doc">
+
+    <property file="../../public/sdk/version.properties"/>
+    <property file="../../public/sdk/ant.properties"/>
+    <property file="project.properties"/>
+    <property file="../../public/sdk/local.properties"/>
+
+    <macrodef name="git">
+        <attribute name="command" />
+        <attribute name="dir" default="" />
+        <element name="args" optional="true" />
+        <sequential>
+            <echo message="git @{command}" />
+            <exec executable="git" dir="@{dir}">
+                <arg value="@{command}" />
+                <args/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <!-- Documentation Tasks -->
+    <tstamp>
+        <format property="year" pattern="yyyy" locale="en,UK" />
+    </tstamp>
+
+    <target name="check-paths">
+        <property environment="env"/>
+        <echo message="${env.PATH}" />
+        <condition property="sphinx.available">
+            <and>
+                <available file="sphinx-build" filepath="${env.PATH}"/>
+            </and>
+        </condition>
+    </target>
+
+    <target name="_sphinx_not_found" unless="sphinx.available">
+        <echo>Sphinx not installed!!  Run "easy_install -U Sphinx"</echo>
+    </target>
+
+    <target name="_check_version">
+        <condition property="version.undefined">
+            <not>
+                <isset property="release.version"/>
+            </not>
+        </condition>
+    </target>
+
+    <target name="_set_version" if="version.undefined" depends="_check_version">
+        <input
+            message="Please enter a version:"
+            addproperty="release.version"
+            defaultvalue="${loopy.version}"/>
+    </target>
+
+    <target name="_check_buildnumber">
+        <condition property="buildnumber.undefined">
+            <not>
+                <isset property="build.number"/>
+            </not>
+        </condition>
+        <condition property="buildnumber.defined">
+            <isset property="build.number"/>
+        </condition>
+    </target>
+
+    <target name="_set_buildnumber" if="buildnumber.undefined" depends="_check_buildnumber">
+        <property name="build.number" value="--debug"/>
+        <echo message="Setting build number for docs to ${build.number}"/>
+    </target>
+
+    <target name="_set_docpaths">
+        <property name="doc.classpath" value="../public/sdk/bin/classes"/>
+        <property name="doc.sourcepath" value="../public/sdk/src"/>
+        <property name="doc.outputpath" value="${loopy.build.dir}"/>
+        <delete dir="${doc.outputpath}"/>
+        <mkdir dir="${doc.outputpath}"/>
+    </target>
+
+    <!-- Python is required on target system for this to work!-->
+    <target name="_sphinx" description="Uses sphinx to generate SDK documentation" if="sphinx.available" depends="_set_buildnumber, _set_version, check-paths, _sphinx_not_found">
+
+        <echo>Setting version in docs to ${release.version}</echo>
+
+        <copy file="src/sphinx/conf_template.py" tofile="src/rst/conf.py" overwrite="true">
+            <filterset>
+                <filter token="name" value="${loopy.sdk.name}"/>
+                <filter token="lname" value="${loopy.sdk.lname}"/>
+                <filter token="company" value="${loopy.company}"/>
+                <filter token="year" value="${year}"/>
+                <filter token="version" value="${release.version}"/>
+                <filter token="build" value="${build.number}"/>
+            </filterset>
+        </copy>
+
+        <!-- Copy dynamic snippets -->
+        <copy file="src/snippets/snippets_template.txt" tofile="src/snippets/snippets.txt" overwrite="true">
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+
+        <mkdir dir="${doc.outputpath}/user_guide"/>
+
+        <exec executable="sphinx-build" failonerror="true" dir="${basedir}">
+            <arg value="-a"/>
+            <arg value="-E"/>
+            <arg value="src/rst"/>
+            <arg value="${doc.outputpath}/user_guide"/>
+        </exec>
+
+        <!-- Manually rename folders and references with underscore -->
+        <replaceregexp flags="g" match="_static" replace="static">
+            <fileset dir="${doc.outputpath}/user_guide" includes="**/*.html **/*.js **/*.css"/>
+        </replaceregexp>
+
+        <replaceregexp flags="g" match="_images" replace="images">
+            <fileset dir="${doc.outputpath}/user_guide" includes="**/*.html **/*.js **/*.css"/>
+        </replaceregexp>
+
+        <move file="${doc.outputpath}/user_guide/_static" tofile="${doc.outputpath}/user_guide/static" failonerror="false"/>
+        <move file="${doc.outputpath}/user_guide/_images" tofile="${doc.outputpath}/user_guide/images" failonerror="false"/>
+
+        <delete file="src/rst/conf.py"/>
+        <delete file="src/snippets/snippets.txt"/>
+
+    </target>
+
+    <target name="javadoc" depends="_set_version">
+
+        <path id="javadoc.classpath">
+            <pathelement path="${doc.classpath}"/>
+            <pathelement path="${sdk.dir}/platforms/${target}/android.jar"/>
+        </path>
+
+        <path id="javadoc.sourcepath">
+            <pathelement path="${doc.sourcepath}"/>
+        </path>
+
+        <mkdir dir="${doc.outputpath}/javadoc"/>
+
+        <javadoc
+                stylesheetfile="src/javadoc/stylesheet.css"
+                access="public"
+                sourcepathref="javadoc.sourcepath"
+                classpathref="javadoc.classpath"
+                destdir="${doc.outputpath}/javadoc"
+                doctitle="${loopy.company} SDK v${release.version} Documentation"
+                excludepackagenames="com.google.*">
+
+            <header>
+                <![CDATA[${loopy.company} SDK v${release.version} Documentation<br/>Copyright ${year} ${loopy.company}<br/><a href="${loopy.website}">${loopy.website}</a>]]>
+            </header>
+
+            <footer>
+                <![CDATA[Copyright ${year} ${loopy.company}<br/>${loopy.website}]]>
+            </footer>
+
+            <link
+                href="http://developer.android.com/reference/"
+                offline="true"
+                packagelistloc="${sdk.dir}/docs/reference"/>
+
+            <link href="http://www.json.org/javadoc/"/>
+        </javadoc>
+    </target>
+
+    <target name="guide" depends="_set_version, _set_docpaths, _sphinx"/>
+    <target name="doc" depends="_set_version, _set_docpaths, javadoc, _sphinx"/>
+
+    <target name="publish-docs" depends="_set_buildnumber, _set_version, doc">
+        <copy todir="${ghpages.path}" overwrite="true">
+            <fileset dir="${doc.outputpath}" includes="**"/>
+        </copy>
+
+        <git command="status" dir="${ghpages.path}"/>
+
+        <git command="add" dir="${ghpages.path}">
+            <args>
+                <arg value="." />
+            </args>
+        </git>
+        <git command="commit" dir="${ghpages.path}">
+            <args>
+                <arg value="-am build-${build.number}" />
+            </args>
+        </git>
+        <git command="push" dir="${ghpages.path}">
+            <args>
+                <arg value="origin" />
+                <arg value="gh-pages" />
+            </args>
+        </git>
+
+    </target>
+
+</project>
+

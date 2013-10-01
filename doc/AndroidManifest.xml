@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.sharethis.example">
+
+<!--begin-snippet-0-->
+<uses-sdk android:minSdkVersion="9" android:targetSdkVersion="18"/>
+<!--end-snippet-0-->
+
+<!--begin-snippet-1-->
+<!-- Required -->
+<uses-permission android:name="android.permission.INTERNET"/>
+
+<!-- Recommended -->
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+<!--end-snippet-1-->
+
+    <application android:icon="@drawable/icon" android:label="@string/app_name">
+
+<!--begin-snippet-2-->
+<receiver android:name="com.sharethis.loopy.sdk.InstallTracker" android:exported="true">
+    <intent-filter>
+        <action android:name="com.android.vending.INSTALL_REFERRER" />
+    </intent-filter>
+</receiver>
+<!--end-snippet-2-->
+
+    </application>
+</manifest>
