@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
-import com.sharethis.loopy.sdk.util.AppUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
