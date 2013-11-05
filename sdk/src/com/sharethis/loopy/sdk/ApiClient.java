@@ -549,6 +549,8 @@ public class ApiClient {
             HttpClient client = httpClientFactory.getClient();
             HttpPost post = new HttpPost(url);
 
+            post.setHeader("Content-Type", "application/json");
+
             if (headers != null) {
                 for (Map.Entry<String, String> header : headers.entrySet()) {
                     post.addHeader(header.getKey(), header.getValue());
