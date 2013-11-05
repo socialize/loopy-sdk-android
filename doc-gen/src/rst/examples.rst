@@ -8,7 +8,7 @@ Examples
 
     .. raw:: html
 
-        <a href="https://github.com/socialize/loopy-demo-android" target="_blank">https://github.com/socialize/loopy-demo-android</a>&nbsp;&#10138;
+        <a href="https://github.com/socialize/loopy-sdk-android/tree/master/demo" target="_blank">https://github.com/socialize/loopy-sdk-android/tree/master/demo</a>&nbsp;&#10138;
 
 .. container:: block
 

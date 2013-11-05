@@ -58,6 +58,7 @@ public class Loopy {
 
     /**
      * Should be called within the Activity lifecycle onCreate() method.
+     *
      * @param context The current context.
      */
     public static void onCreate(Context context, String apiKey) {
@@ -67,6 +68,7 @@ public class Loopy {
 
     /**
      * Should be called within the Activity lifecycle onDestroy() method.
+     *
      * @param context The current context.
      */
     public static void onDestroy(Context context) {
@@ -76,6 +78,7 @@ public class Loopy {
 
     /**
      * Should be called within the Activity lifecycle onStart() method.
+     *
      * @param context The current context.
      */
     public static void onStart(Context context) {
@@ -84,6 +87,7 @@ public class Loopy {
 
     /**
      * Should be called within the Activity lifecycle onStop() method.
+     *
      * @param context The current context.
      */
     public static void onStop(Context context) {
@@ -93,8 +97,9 @@ public class Loopy {
     /**
      * Called by the BroadcastReciever when a referred installation occurs.
      * This will be called from a separate process.
+     *
      * @param context The current context.
-     * @param intent The receiver intent.
+     * @param intent  The receiver intent.
      */
     public static void onInstall(final Context context, Intent intent) {
         // Send an in-app broadcast to trigger the install on the main process thread.
@@ -106,9 +111,10 @@ public class Loopy {
 
     /**
      * Displays the default share dialog and presents the apps that are able to consume the content type of the share intent provided.
-     * @param context The current context.
+     *
+     * @param context     The current context.
      * @param dialogTitle The title of the dialog.
-     * @param url The url to be shared.
+     * @param url         The url to be shared.
      * @param shareIntent The original share intent
      */
     public static void showShareDialog(
@@ -124,9 +130,10 @@ public class Loopy {
 
     /**
      * Displays the default share dialog and presents the apps that are able to consume the content type of the share intent provided.
-     * @param context The current context.
+     *
+     * @param context     The current context.
      * @param dialogTitle The title of the dialog.
-     * @param item The item to be shared.
+     * @param item        The item to be shared.
      * @param shareIntent The original share intent
      */
     public static void showShareDialog(final Context context,
@@ -137,11 +144,11 @@ public class Loopy {
         Loopy.shorten(item, new ShareCallback() {
             @Override
             public void onResult(Item item, Throwable error) {
-                if(listener != null) {
+                if (listener != null) {
                     listener.onLinkGenerated(item, error);
                 }
 
-                if(error == null || !StringUtils.isEmpty(item.getUrl())) {
+                if (error == null || !StringUtils.isEmpty(item.getUrl())) {
                     showDialog(context, dialogTitle, shareIntent, listener);
                 }
             }
@@ -150,9 +157,10 @@ public class Loopy {
 
     /**
      * Displays the default share dialog and presents the apps that are able to consume the content type of the share intent provided.
-     * @param context The current context.
-     * @param title The title of the dialog.
-     * @param item The Item to be shared.
+     *
+     * @param context     The current context.
+     * @param title       The title of the dialog.
+     * @param item        The Item to be shared.
      * @param shareIntent The original share intent
      */
     static void showDialog(
@@ -166,7 +174,8 @@ public class Loopy {
 
     /**
      * Adds tracking to the given url.
-     * @param url The URL to shorten.
+     *
+     * @param url      The URL to shorten.
      * @param callback A callback to handle the result.
      */
     public static void shorten(String url, final ShareCallback callback) {
@@ -177,11 +186,12 @@ public class Loopy {
 
     /**
      * Adds tracking to the given item.
-     * @param item The item to track.
+     *
+     * @param item     The item to track.
      * @param callback A callback to handle the result.
      */
     public static void shorten(final Item item, final ShareCallback callback) {
-        if(callback != null) {
+        if (callback != null) {
             callback.setItem(item);
         }
         instance.shortlink(item, callback);
@@ -201,6 +211,7 @@ public class Loopy {
 
     /**
      * Sets the api key
+     *
      * @param apiKey Your api key.
      */
     public static void setApiKey(String apiKey) {
@@ -214,7 +225,7 @@ public class Loopy {
 
     // Mockable
     void share(Item item, String channel, ApiCallback callback) {
-        if(item.getShortlink() != null) {
+        if (item.getShortlink() != null) {
             getApiClient().share(
                     instance.config.getApiKey(),
                     item.getShortlink(),
@@ -226,17 +237,16 @@ public class Loopy {
     void shareFromIntent(Context context, Item item, Intent intent) {
         String app = AppDataCache.getInstance().getAppLabel(intent.getComponent().getPackageName(), intent.getComponent().getClassName());
 
-        if(app == null) {
+        if (app == null) {
             PackageManager pm = context.getPackageManager();
             try {
                 app = pm.getActivityInfo(intent.getComponent(), 0).loadLabel(pm).toString();
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Logger.e(e);
             }
         }
 
-        if(app != null) {
+        if (app != null) {
             share(item, app, null);
         }
     }
@@ -259,7 +269,7 @@ public class Loopy {
             protected Void doInBackground(Void... params) {
                 String type = shareIntent.getType();
 
-                if(type == null) {
+                if (type == null) {
                     type = "text/plain";
                 }
 
@@ -280,13 +290,13 @@ public class Loopy {
 
             @Override
             protected void onPostExecute(Void aVoid) {
-                if(view != null) {
+                if (view != null) {
                     AlertDialog.Builder builder = newAlertDialogBuilder(new ContextThemeWrapper(context, R.style.STDialogTheme));
                     builder.setTitle(title);
                     builder.setView(view);
                     AlertDialog alertDialog = builder.create();
 
-                    if(dialogListener != null) {
+                    if (dialogListener != null) {
                         alertDialog.setOnCancelListener(dialogListener);
                         alertDialog.setOnShowListener(dialogListener);
                         adapter.setShareDialogListener(dialogListener);
@@ -307,14 +317,13 @@ public class Loopy {
         int i = 0;
         ShareDialogRow row = null;
 
-        if(appsForContentType != null) {
+        if (appsForContentType != null) {
             for (ResolveInfo resolveInfo : appsForContentType) {
-                if(i % 2 == 0) { // even
+                if (i % 2 == 0) { // even
                     row = new ShareDialogRow();
                     appdata.add(row);
                     row.left = resolveInfo;
-                }
-                else if (row != null) {
+                } else if (row != null) {
                     row.right = resolveInfo;
                 }
                 i++;
@@ -325,6 +334,7 @@ public class Loopy {
     }
 
     public static final class Channel {
+
         public static final String FACEBOOK = "facebook";
         public static final String TWITTER = "twitter";
         public static final String GOOGLEPLUS = "googleplus";
@@ -337,7 +347,9 @@ public class Loopy {
     AppUtils getAppUtils() { return AppUtils.getInstance(); }
 
     // mockable
-    ShareDialogAdapter newShareDialogAdapter(Context context, List<ShareDialogRow> appList) { return new ShareDialogAdapter(context, appList); }
+    ShareDialogAdapter newShareDialogAdapter(Context context, List<ShareDialogRow> appList) {
+        return new ShareDialogAdapter(context, appList);
+    }
 
     // mockable
     AlertDialog.Builder newAlertDialogBuilder(Context context) { return new AlertDialog.Builder(context); }
@@ -376,11 +388,11 @@ public class Loopy {
     }
 
     protected void create(Context context, String apiKey) {
-        if(instances == 0) {
+        if (instances == 0) {
             this.device = new Device().onCreate(context);
             this.app = new App().onCreate(context);
             this.config.setApiKey(apiKey);
-            if(Geo.hasPermission(context)) {
+            if (Geo.hasPermission(context)) {
                 this.geo = new Geo();
             }
         }
@@ -391,7 +403,7 @@ public class Loopy {
 
         startLatch = new CountDownLatch(1);
 
-        if(geo != null) {
+        if (geo != null) {
             geo.onStart(context);
         }
 
@@ -399,7 +411,7 @@ public class Loopy {
 
         session.start(context);
 
-        if(!receiverRegistered) {
+        if (!receiverRegistered) {
             this.installReceiver = new BroadcastReceiver() {
                 @Override
                 public void onReceive(Context context, Intent intent) {
@@ -423,22 +435,22 @@ public class Loopy {
 
                     apiClient.start(session);
 
-                    if(session.getState() != null) {
+                    if (session.getState() != null) {
 
                         Device device = getDevice();
                         String androidId = null;
 
-                        if(device != null) {
+                        if (device != null) {
                             androidId = device.getAndroidId();
                         }
 
-                        if(session.getState().hasSTDID()) {
+                        if (session.getState().hasSTDID()) {
 
                             long currentTime = System.currentTimeMillis();
                             long sessionTimeoutMS = session.getConfig().getSessionTimeoutSeconds() * 1000;
                             long lastOpenTime = session.getState().getLastOpenTime();
 
-                            if(currentTime - lastOpenTime >= sessionTimeoutMS) {
+                            if (currentTime - lastOpenTime >= sessionTimeoutMS) {
                                 // TODO: get referrer
                                 apiClient.open(config.getApiKey(), null, null);
                             }
@@ -446,38 +458,33 @@ public class Loopy {
                             session.getState().setLastOpenTime(currentTime);
 
                             // Check device ID
-                            if(androidId != null && (session.getState().getDeviceId() == null || !session.getState().getDeviceId().equals(androidId))) {
+                            if (androidId != null && (session.getState().getDeviceId() == null || !session.getState().getDeviceId().equals(androidId))) {
                                 try {
                                     JSONObject result = apiClient.stdidDirect(config.getApiKey());
                                     session.getState().setStdid(JSONUtils.getString(result, "stdid"));
                                     session.getState().setDeviceId(androidId);
-                                }
-                                catch (Exception e) {
+                                } catch (Exception e) {
                                     Logger.e(e);
                                 }
                             }
 
                             try {
                                 session.getState().save(context);
-                            }
-                            catch (Exception e) {
+                            } catch (Exception e) {
                                 Logger.e(e);
                             }
-                        }
-                        else {
+                        } else {
                             try {
                                 JSONObject result = apiClient.installDirect(config.getApiKey(), null);
                                 session.getState().setStdid(JSONUtils.getString(result, "stdid"));
                                 session.getState().setDeviceId(androidId);
                                 session.getState().save(context);
-                            }
-                            catch (Exception e) {
+                            } catch (Exception e) {
                                 Logger.e(e);
                             }
                         }
                     }
-                }
-                finally {
+                } finally {
                     startLatch.countDown();
                 }
                 return null;
@@ -486,16 +493,15 @@ public class Loopy {
     }
 
     protected void stop(Context context) {
-        if(geo != null) {
+        if (geo != null) {
             geo.onStop(context);
         }
 
-        if(receiverRegistered) {
+        if (receiverRegistered) {
 
             try {
                 context.unregisterReceiver(installReceiver);
-            }
-            catch (Exception ignore) {}
+            } catch (Exception ignore) {}
 
             receiverRegistered = false;
         }
@@ -507,7 +513,7 @@ public class Loopy {
 
     protected void destroy(Context context) {
         instances--;
-        if(instances<=0) {
+        if (instances <= 0) {
             instances = 0;
         }
     }
@@ -517,7 +523,7 @@ public class Loopy {
         Bundle extras = intent.getExtras();
         final String referrerString = extras.getString("referrer");
 
-        if(Logger.isDebugEnabled()) {
+        if (Logger.isDebugEnabled()) {
             Logger.d("Received install referrer [" +
                     referrerString +
                     "]");
@@ -549,7 +555,7 @@ public class Loopy {
     }
 
     protected boolean waitForStart(long timeout) {
-        if(startLatch != null) {
+        if (startLatch != null) {
             try {
                 return startLatch.await(timeout, TimeUnit.MILLISECONDS);
             } catch (InterruptedException ignore) {}

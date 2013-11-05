@@ -30,7 +30,7 @@ public class ShareActionProviderActivity extends ActionBarActivity {
         setContentView(R.layout.share_menu_activity);       // <== TODO: Set this
 
         // Call onCreate and pass in your API key
-        Loopy.onCreate(this, "<YOUR-API-KEY>");             // <== TODO: Set this
+        Loopy.onCreate(this, "e3xjjqq3pcuwsqmzh7swewv6");             // <== TODO: Set this
     }
 
     @Override
