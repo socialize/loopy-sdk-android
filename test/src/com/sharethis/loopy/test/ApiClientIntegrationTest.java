@@ -1,7 +1,13 @@
 package com.sharethis.loopy.test;
 
 import android.content.Context;
-import com.sharethis.loopy.sdk.*;
+import com.sharethis.loopy.sdk.ApiCallback;
+import com.sharethis.loopy.sdk.ApiClient;
+import com.sharethis.loopy.sdk.Event;
+import com.sharethis.loopy.sdk.Item;
+import com.sharethis.loopy.sdk.Loopy;
+import com.sharethis.loopy.sdk.LoopyAccess;
+import com.sharethis.loopy.sdk.LoopyException;
 import com.sharethis.loopy.test.util.Holder;
 import com.sharethis.loopy.test.util.JsonAssert;
 import org.json.JSONObject;
@@ -14,18 +20,20 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * tests against the mock API
+ *
  * @author Jason Polites
  */
 public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
 
     ApiClient apiClient;
     String apiKey = "foobar_api_key";
+    String apiSecret = "foobar_api_secret";
 
     @Override
     public void setUp() throws Exception {
         super.setUp();
         Context context = getLocalContext();
-        Loopy.onCreate(context, apiKey);
+        Loopy.onCreate(context, apiKey, apiSecret);
         Loopy.onStart(context);
 
         apiClient = LoopyAccess.getApiClient();
@@ -46,7 +54,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
         new ApiTestRunner() {
             @Override
             void doApiCall(ApiClient client, ApiCallback callback) {
-                client.install(apiKey, "test_referrer", callback);
+                client.install(apiKey, apiSecret, "test_referrer", callback);
             }
 
             @Override
@@ -61,7 +69,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
         new ApiTestRunner() {
             @Override
             void doApiCall(ApiClient client, ApiCallback callback) {
-                client.referrer(apiKey, "test_referrer", callback);
+                client.referrer(apiKey, apiSecret, "test_referrer", callback);
             }
 
             @Override
@@ -75,7 +83,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
         new ApiTestRunner() {
             @Override
             void doApiCall(ApiClient client, ApiCallback callback) {
-                client.open(apiKey, "test_referrer", callback);
+                client.open(apiKey, apiSecret, "test_referrer", callback);
             }
 
             @Override
@@ -89,7 +97,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
         new ApiTestRunner() {
             @Override
             void doApiCall(ApiClient client, ApiCallback callback) {
-                client.share(apiKey, "foobar", Loopy.Channel.FACEBOOK, callback);
+                client.share(apiKey, apiSecret, "foobar", Loopy.Channel.FACEBOOK, callback);
             }
 
             @Override
@@ -105,13 +113,13 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
             void doApiCall(ApiClient client, ApiCallback callback) {
 
                 Set<String> tags = new HashSet<String>();
-                tags.addAll( Arrays.asList("technology", "android"));
+                tags.addAll(Arrays.asList("technology", "android"));
 
                 Item item = new Item();
                 item.setUrl("url");
                 item.setTags(tags);
 
-                client.shortlink(apiKey, item, callback);
+                client.shortlink(apiKey, apiSecret, item, callback);
             }
 
             @Override
@@ -131,7 +139,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
                 event.setType("share");
                 event.addMeta("foo", "bar");
 
-                client.log(apiKey, event, callback);
+                client.log(apiKey, apiSecret, event, callback);
             }
 
             @Override
@@ -145,7 +153,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
         new ApiTestRunner() {
             @Override
             void doApiCall(ApiClient client, ApiCallback callback) {
-                client.stdid(apiKey, callback);
+                client.stdid(apiKey, apiSecret, callback);
             }
 
             @Override
@@ -165,7 +173,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
             @Override
             void doApiCall(ApiClient client, ApiCallback callback) {
                 // Test app has 4 second timeout
-                client.stdid(apiKey, LoopyAccess.wrapDelay(callback, 5000));
+                client.stdid(apiKey, apiSecret, LoopyAccess.wrapDelay(callback, 5000));
             }
 
             @Override
@@ -228,11 +236,10 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
 
             assertTrue("Timeout waiting for api to return", returned);
 
-            if(fail.get() != null) {
-                if(allowError) {
+            if (fail.get() != null) {
+                if (allowError) {
                     assertError(fail.get());
-                }
-                else {
+                } else {
                     assertNull(fail.get().getMessage(), fail.get());
                 }
             }

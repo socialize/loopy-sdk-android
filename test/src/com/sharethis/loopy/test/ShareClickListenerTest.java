@@ -5,7 +5,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
-import com.sharethis.loopy.sdk.*;
+import com.sharethis.loopy.sdk.ApiCallback;
+import com.sharethis.loopy.sdk.ApiClient;
+import com.sharethis.loopy.sdk.MockItem;
+import com.sharethis.loopy.sdk.MockShareClickListener;
+import com.sharethis.loopy.sdk.MockShareConfig;
 import com.sharethis.loopy.sdk.util.AppDataCache;
 import com.sharethis.loopy.test.util.Holder;
 import org.mockito.Mockito;
@@ -49,7 +53,7 @@ public class ShareClickListenerTest extends LoopyActivityTestCase {
 
         final ApiClient apiClient = new ApiClient() {
             @Override
-            public void share(String apiKey, String shortlink, String channel, ApiCallback callback) {
+            public void share(String apiKey, String apiSecret, String shortlink, String channel, ApiCallback callback) {
                 apiKeyHolder.set(apiKey);
                 shortlinkHolder.set(shortlink);
                 channelHolder.set(channel);

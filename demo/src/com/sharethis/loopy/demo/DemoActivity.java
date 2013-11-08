@@ -24,13 +24,13 @@ public class DemoActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        // Call onCreate and pass in your API key
-        Loopy.onCreate(this, "e3xjjqq3pcuwsqmzh7swewv6");
+        // Call onCreate and pass in your API key and secret
+        Loopy.onCreate(this, "e3xjjqq3pcuwsqmzh7swewv6", "dsfgrtwhi73937ehodlsoi0");
 
         // The following code is just for this demo app
         ArrayAdapter<String> optionsAdapter = new ArrayAdapter<String>(this, R.layout.row, new String[]{
-            "Share Dialog",
-            "Share Options Menu"
+                "Share Dialog",
+                "Share Options Menu"
         });
         ListView list = (ListView) findViewById(R.id.main);
         list.setAdapter(optionsAdapter);
@@ -42,8 +42,8 @@ public class DemoActivity extends Activity {
 
                         // Show a share dialog for a single URL
                         // More detailed data can be provided by sharing an "Item"
-                       showShareDialog("http://www.sharethis.com");
-                       break;
+                        showShareDialog("http://www.sharethis.com");
+                        break;
                     case 1:
                         startActivity(new Intent(DemoActivity.this, ShareActionProviderActivity.class));
                         break;
@@ -85,8 +85,7 @@ public class DemoActivity extends Activity {
                 if (error == null) {
                     // We got a tracking shortlink ok, set it in the body of the share (or wherever you like)
                     dialogIntent.putExtra(Intent.EXTRA_TEXT, item.getShortlink());
-                }
-                else {
+                } else {
                     // We couldn't get the shortlink, just use the original URL
                     dialogIntent.putExtra(Intent.EXTRA_TEXT, urlToShare);
                 }

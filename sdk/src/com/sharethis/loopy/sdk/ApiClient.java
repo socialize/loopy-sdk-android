@@ -32,7 +32,8 @@ public class ApiClient {
     public static final String LOG = "log";
     public static final String STDID = "stdid";
 
-    public static final String AUTH_HEADER = "X-LoopyAuth";
+    public static final String AUTH_HEADER_KEY = "X-LoopyAppID";
+    public static final String AUTH_HEADER_SECRET = "X-LoopyKey";
 
     private static final ShortlinkCache shortlinkCache = new ShortlinkCache();
     private boolean useShortlinkCache = true;
@@ -53,7 +54,7 @@ public class ApiClient {
      *
      * @param callback A callback to handle the result.
      */
-    public void stdid(String apiKey, ApiCallback callback) {
+    public void stdid(String apiKey, String apiSecret, ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
             Logger.d("stdid called");
@@ -64,7 +65,7 @@ public class ApiClient {
 
             if (state.hasSTDID()) {
                 JSONObject payload = getSTDIDPayload(state);
-                callAsync(getAuthHeader(apiKey), payload, STDID, true, callback);
+                callAsync(getAuthHeader(apiKey, apiSecret), payload, STDID, true, callback);
             } else {
                 LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling stdid", LoopyException.PARAMETER_MISSING);
                 if (callback != null) {
@@ -80,7 +81,7 @@ public class ApiClient {
         }
     }
 
-    JSONObject stdidDirect(String apiKey) throws Exception {
+    JSONObject stdidDirect(String apiKey, String apiSecret) throws Exception {
         if (Logger.isDebugEnabled()) {
             Logger.d("stdid called");
         }
@@ -88,7 +89,7 @@ public class ApiClient {
         LoopyState state = getState();
         if (state.hasSTDID()) {
             JSONObject payload = getSTDIDPayload(state);
-            return call(getAuthHeader(apiKey), payload, STDID, true);
+            return call(getAuthHeader(apiKey, apiSecret), payload, STDID, true);
         } else {
             throw new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling stdid", LoopyException.PARAMETER_MISSING);
         }
@@ -111,7 +112,7 @@ public class ApiClient {
      * @param referrer The referrer that lead to the installation of the app.
      * @param callback A callback to handle the result.
      */
-    public void install(String apiKey, String referrer, ApiCallback callback) {
+    public void install(String apiKey, String apiSecret, String referrer, ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
             Logger.d("install called for " + referrer);
@@ -119,7 +120,7 @@ public class ApiClient {
 
         try {
             JSONObject payload = getInstallPayload(referrer);
-            callAsync(getAuthHeader(apiKey), payload, INSTALL, true, callback);
+            callAsync(getAuthHeader(apiKey, apiSecret), payload, INSTALL, true, callback);
         } catch (JSONException e) {
             Logger.e(e);
             if (callback != null) {
@@ -128,12 +129,12 @@ public class ApiClient {
         }
     }
 
-    JSONObject installDirect(String apiKey, String referrer) throws Exception {
+    JSONObject installDirect(String apiKey, String apiSecret, String referrer) throws Exception {
         if (Logger.isDebugEnabled()) {
             Logger.d("install called for " + referrer);
         }
         JSONObject payload = getInstallPayload(referrer);
-        return call(getAuthHeader(apiKey), payload, INSTALL, true);
+        return call(getAuthHeader(apiKey, apiSecret), payload, INSTALL, true);
     }
 
     JSONObject getInstallPayload(String referrer) throws JSONException {
@@ -153,7 +154,7 @@ public class ApiClient {
      * @param referrer The referrer that lead to the installation of the app.
      * @param callback A callback to handle the result.
      */
-    public void referrer(String apiKey, String referrer, ApiCallback callback) {
+    public void referrer(String apiKey, String apiSecret, String referrer, ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
             Logger.d("referrer called for " + referrer);
@@ -174,7 +175,7 @@ public class ApiClient {
                 addApp(payload);
                 addClient(payload);
 
-                callAsync(getAuthHeader(apiKey), payload, REFERRER, false, callback);
+                callAsync(getAuthHeader(apiKey, apiSecret), payload, REFERRER, false, callback);
             } else {
                 LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling referrer", LoopyException.PARAMETER_MISSING);
                 if (callback != null) {
@@ -197,7 +198,7 @@ public class ApiClient {
      * @param referrer The referrer that lead to the open of the app.
      * @param callback A callback to handle the result.
      */
-    public void open(String apiKey, String referrer, ApiCallback callback) {
+    public void open(String apiKey, String apiSecret, String referrer, ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
             Logger.d("open called");
@@ -218,7 +219,7 @@ public class ApiClient {
                 addApp(payload);
                 addClient(payload);
 
-                callAsync(getAuthHeader(apiKey), payload, OPEN, false, callback);
+                callAsync(getAuthHeader(apiKey, apiSecret), payload, OPEN, false, callback);
             } else {
                 LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling open", LoopyException.PARAMETER_MISSING);
                 if (callback != null) {
@@ -240,7 +241,7 @@ public class ApiClient {
      * @param item     The item being shared.
      * @param callback A callback to handle the response.
      */
-    public void shortlink(String apiKey, final Item item, final ApiCallback callback) {
+    public void shortlink(String apiKey, String apiSecret, final Item item, final ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
             Logger.d("shortlink called for " + item);
@@ -281,7 +282,7 @@ public class ApiClient {
                     JSONUtils.put(payload, "tags", item.tags);
                 }
 
-                callAsync(getAuthHeader(apiKey), payload, SHORTLINK, false, new ApiCallback() {
+                callAsync(getAuthHeader(apiKey, apiSecret), payload, SHORTLINK, false, new ApiCallback() {
                     @Override
                     public void onSuccess(JSONObject result) {
 
@@ -340,7 +341,7 @@ public class ApiClient {
      * @param channel   The channel through which the share is occurring (e.g. facebook, email etc)
      * @param callback  A callback to handle the response.
      */
-    public void share(String apiKey, final String shortlink, String channel, final ApiCallback callback) {
+    public void share(String apiKey, String apiSecret, final String shortlink, String channel, final ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
             Logger.d("share called for " + shortlink + " via channel " + channel);
@@ -363,7 +364,7 @@ public class ApiClient {
                 addApp(payload);
                 addClient(payload);
 
-                callAsync(getAuthHeader(apiKey), payload, SHARE, false, new ApiCallback() {
+                callAsync(getAuthHeader(apiKey, apiSecret), payload, SHARE, false, new ApiCallback() {
                     @Override
                     public void onSuccess(JSONObject result) {
 
@@ -418,7 +419,7 @@ public class ApiClient {
      * @param event    The event being logged.
      * @param callback A callback to handle the result.
      */
-    public void log(String apiKey, Event event, ApiCallback callback) {
+    public void log(String apiKey, String apiSecret, Event event, ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
             Logger.d("log called for " + event);
@@ -445,7 +446,7 @@ public class ApiClient {
                 addApp(payload);
                 addClient(payload);
 
-                callAsync(getAuthHeader(apiKey), payload, LOG, false, callback);
+                callAsync(getAuthHeader(apiKey, apiSecret), payload, LOG, false, callback);
             } else {
                 LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling log", LoopyException.PARAMETER_MISSING);
                 if (callback != null) {
@@ -685,9 +686,10 @@ public class ApiClient {
         this.httpClientFactory = httpClientFactory;
     }
 
-    Map<String, String> getAuthHeader(String apiKey) {
+    Map<String, String> getAuthHeader(String apiKey, String apiSecret) {
         Map<String, String> headers = new HashMap<String, String>();
-        headers.put(AUTH_HEADER, apiKey);
+        headers.put(AUTH_HEADER_KEY, apiKey);
+        headers.put(AUTH_HEADER_SECRET, apiSecret);
         return headers;
     }
 

@@ -2,7 +2,13 @@ package com.sharethis.loopy.test;
 
 import android.content.Context;
 import android.content.Intent;
-import com.sharethis.loopy.sdk.*;
+import com.sharethis.loopy.sdk.ApiCallback;
+import com.sharethis.loopy.sdk.ApiClient;
+import com.sharethis.loopy.sdk.Loopy;
+import com.sharethis.loopy.sdk.LoopyAccess;
+import com.sharethis.loopy.sdk.LoopyState;
+import com.sharethis.loopy.sdk.MockLoopy;
+import com.sharethis.loopy.sdk.Session;
 import com.sharethis.loopy.test.util.Holder;
 import org.mockito.Mockito;
 
@@ -22,7 +28,7 @@ public class LoopyInstallTrackerTest extends LoopyAndroidTestCase {
 
         ApiClient apiClient = new ApiClient() {
             @Override
-            public void referrer(String apiKey, String referrerString, ApiCallback callback) {
+            public void referrer(String apiKey, String apiSecret, String referrerString, ApiCallback callback) {
                 // Do nothing, just make sure it's called
                 referrer.set(referrerString);
             }
@@ -52,7 +58,7 @@ public class LoopyInstallTrackerTest extends LoopyAndroidTestCase {
 
         ApiClient apiClient = new ApiClient() {
             @Override
-            public void referrer(String apiKey, String referrerString, ApiCallback callback) {
+            public void referrer(String apiKey, String apiSecret, String referrerString, ApiCallback callback) {
                 // Simulate fail
                 callback.onError(new Exception("Dummy Exception - Ignore Me"));
             }

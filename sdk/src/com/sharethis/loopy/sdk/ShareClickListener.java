@@ -11,6 +11,7 @@ import org.json.JSONObject;
  * @author Jason Polites
  */
 class ShareClickListener {
+
     public void onClick(
             Dialog dlg,
             final ResolveInfo app,
@@ -18,7 +19,7 @@ class ShareClickListener {
             final Item shareItem,
             final Intent shareIntent) {
 
-        if(dlg != null) {
+        if (dlg != null) {
 
             dlg.dismiss();
 
@@ -28,11 +29,11 @@ class ShareClickListener {
             try {
                 String shortlink = shareItem.getShortlink();
 
-                if(shortlink == null) {
+                if (shortlink == null) {
                     shortlink = shareItem.getUrl();
                 }
 
-                getApiClient().share(config.getApiKey(), shortlink, appLabel, new ApiCallback() {
+                getApiClient().share(config.getApiKey(), config.getApiSecret(), shortlink, appLabel, new ApiCallback() {
                     @Override
                     public void onSuccess(JSONObject result) {
                         // Launch the app with the data from the share
@@ -48,8 +49,7 @@ class ShareClickListener {
                         context.startActivity(shareIntent);
                     }
                 });
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 Logger.e(e);
             }
         }

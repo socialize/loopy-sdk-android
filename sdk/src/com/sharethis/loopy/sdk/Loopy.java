@@ -61,9 +61,9 @@ public class Loopy {
      *
      * @param context The current context.
      */
-    public static void onCreate(Context context, String apiKey) {
+    public static void onCreate(Context context, String apiKey, String apiSecret) {
         AppDataCache.getInstance().onCreate(context);
-        instance.create(context, apiKey);
+        instance.create(context, apiKey, apiSecret);
     }
 
     /**
@@ -210,24 +210,30 @@ public class Loopy {
     }
 
     /**
-     * Sets the api key
+     * Sets the api key/secret combination
      *
-     * @param apiKey Your api key.
+     * @param apiKey    Your api key.
+     * @param apiSecret Your api secret.
      */
-    public static void setApiKey(String apiKey) {
+    public static void setApiKey(String apiKey, String apiSecret) {
         instance.config.setApiKey(apiKey);
+        instance.config.setApiSecret(apiSecret);
     }
 
     // Mockable
     void shortlink(Item item, ApiCallback callback) {
-        getApiClient().shortlink(instance.config.getApiKey(), item, callback);
+        getApiClient().shortlink(
+                config.getApiKey(),
+                config.getApiSecret(),
+                item, callback);
     }
 
     // Mockable
     void share(Item item, String channel, ApiCallback callback) {
         if (item.getShortlink() != null) {
             getApiClient().share(
-                    instance.config.getApiKey(),
+                    config.getApiKey(),
+                    config.getApiSecret(),
                     item.getShortlink(),
                     channel,
                     callback);
@@ -387,11 +393,12 @@ public class Loopy {
         this.apiClient = apiClient;
     }
 
-    protected void create(Context context, String apiKey) {
+    protected void create(Context context, String apiKey, String apiSecret) {
         if (instances == 0) {
             this.device = new Device().onCreate(context);
             this.app = new App().onCreate(context);
             this.config.setApiKey(apiKey);
+            this.config.setApiSecret(apiSecret);
             if (Geo.hasPermission(context)) {
                 this.geo = new Geo();
             }
@@ -452,7 +459,9 @@ public class Loopy {
 
                             if (currentTime - lastOpenTime >= sessionTimeoutMS) {
                                 // TODO: get referrer
-                                apiClient.open(config.getApiKey(), null, null);
+                                apiClient.open(
+                                        config.getApiKey(),
+                                        config.getApiSecret(), null, null);
                             }
 
                             session.getState().setLastOpenTime(currentTime);
@@ -460,7 +469,9 @@ public class Loopy {
                             // Check device ID
                             if (androidId != null && (session.getState().getDeviceId() == null || !session.getState().getDeviceId().equals(androidId))) {
                                 try {
-                                    JSONObject result = apiClient.stdidDirect(config.getApiKey());
+                                    JSONObject result = apiClient.stdidDirect(
+                                            config.getApiKey(),
+                                            config.getApiSecret());
                                     session.getState().setStdid(JSONUtils.getString(result, "stdid"));
                                     session.getState().setDeviceId(androidId);
                                 } catch (Exception e) {
@@ -475,7 +486,9 @@ public class Loopy {
                             }
                         } else {
                             try {
-                                JSONObject result = apiClient.installDirect(config.getApiKey(), null);
+                                JSONObject result = apiClient.installDirect(
+                                        config.getApiKey(),
+                                        config.getApiSecret(), null);
                                 session.getState().setStdid(JSONUtils.getString(result, "stdid"));
                                 session.getState().setDeviceId(androidId);
                                 session.getState().save(context);
@@ -529,7 +542,9 @@ public class Loopy {
                     "]");
         }
 
-        apiClient.referrer(config.getApiKey(), referrerString, new ApiCallback() {
+        apiClient.referrer(
+                config.getApiKey(),
+                config.getApiSecret(), referrerString, new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
                 // Just log

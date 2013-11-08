@@ -1,6 +1,7 @@
 package com.sharethis.loopy.demo;
 
 //begin-snippet-0
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,8 +30,8 @@ public class ShareActionProviderActivity extends ActionBarActivity {
         // with your activity's layout
         setContentView(R.layout.share_menu_activity);       // <== TODO: Set this
 
-        // Call onCreate and pass in your API key
-        Loopy.onCreate(this, "e3xjjqq3pcuwsqmzh7swewv6");             // <== TODO: Set this
+        // Call onCreate and pass in your API key and secret
+        Loopy.onCreate(this, "e3xjjqq3pcuwsqmzh7swewv6", "dsfgrtwhi73937ehodlsoi0");             // <== TODO: Set this
     }
 
     @Override
@@ -94,17 +95,16 @@ public class ShareActionProviderActivity extends ActionBarActivity {
 
                             new ShareActionProvider.OnShareTargetSelectedListener() {
 
-                            @Override
-                            public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
-                                // Report the share event
-                                reportShare(context, intent);
+                                @Override
+                                public boolean onShareTargetSelected(ShareActionProvider shareActionProvider, Intent intent) {
+                                    // Report the share event
+                                    reportShare(context, intent);
 
-                                // Return value is ignored, so just return false.
-                                return false;
-                            }
-                        });
-                }
-                else {
+                                    // Return value is ignored, so just return false.
+                                    return false;
+                                }
+                            });
+                } else {
                     // We couldn't get the shortlink, just use the original URL
                     shareIntent.putExtra(Intent.EXTRA_TEXT, urlToShare);
                 }

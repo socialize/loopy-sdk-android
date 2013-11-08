@@ -6,6 +6,7 @@ package com.sharethis.loopy.sdk;
 public class ShareConfig {
 
     private String apiKey;
+    private String apiSecret;
 
     ShareConfig() {}
 
@@ -17,4 +18,11 @@ public class ShareConfig {
         this.apiKey = apiKey;
     }
 
+    public String getApiSecret() {
+        return apiSecret;
+    }
+
+    void setApiSecret(String apiSecret) {
+        this.apiSecret = apiSecret;
+    }
 }

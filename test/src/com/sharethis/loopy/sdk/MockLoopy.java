@@ -116,8 +116,8 @@ public class MockLoopy extends Loopy {
     }
 
     @Override
-    public void create(Context context, String apiKey) {
-        super.create(context, apiKey);
+    public void create(Context context, String apiKey, String apiSecret) {
+        super.create(context, apiKey, apiSecret);
     }
 
     @Override

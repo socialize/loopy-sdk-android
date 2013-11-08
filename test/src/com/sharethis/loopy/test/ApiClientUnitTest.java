@@ -1,6 +1,16 @@
 package com.sharethis.loopy.test;
 
-import com.sharethis.loopy.sdk.*;
+import com.sharethis.loopy.sdk.ApiCallback;
+import com.sharethis.loopy.sdk.ApiClient;
+import com.sharethis.loopy.sdk.App;
+import com.sharethis.loopy.sdk.Device;
+import com.sharethis.loopy.sdk.Event;
+import com.sharethis.loopy.sdk.Geo;
+import com.sharethis.loopy.sdk.Item;
+import com.sharethis.loopy.sdk.Loopy;
+import com.sharethis.loopy.sdk.LoopyException;
+import com.sharethis.loopy.sdk.LoopyState;
+import com.sharethis.loopy.sdk.MockApiClient;
 import com.sharethis.loopy.test.util.Holder;
 import com.sharethis.loopy.test.util.JsonAssert;
 import com.sharethis.loopy.test.util.TestUtils;
@@ -8,7 +18,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.mockito.Mockito;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -24,6 +37,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
     LoopyState state;
     Device.WifiState wifiState;
     String apiKey = "foobar_api_key";
+    String apiSecret = "foobar_api_secret";
 
     final Holder<JSONObject> result = new Holder<JSONObject>();
     final Holder<String> endpointResult = new Holder<String>();
@@ -110,7 +124,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        client.install(apiKey, referrer, new ApiCallback() {
+        client.install(apiKey, apiSecret, referrer, new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
                 latch.countDown();
@@ -148,7 +162,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        client.referrer(apiKey, referrer, new ApiCallback() {
+        client.referrer(apiKey, apiSecret, referrer, new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
                 latch.countDown();
@@ -186,7 +200,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        client.open(apiKey, referrer, new ApiCallback() {
+        client.open(apiKey, apiSecret, referrer, new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
                 latch.countDown();
@@ -223,7 +237,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        client.stdid(apiKey, new ApiCallback() {
+        client.stdid(apiKey, apiSecret, new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
                 latch.countDown();
@@ -261,7 +275,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         final CountDownLatch latch = new CountDownLatch(1);
 
         Set<String> tags = new HashSet<String>();
-        tags.addAll( Arrays.asList("sports", "entertainment"));
+        tags.addAll(Arrays.asList("sports", "entertainment"));
 
         Item item = new Item();
         item.setUrl("foobar_url");
@@ -272,7 +286,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         item.setVideoUrl("foobar_video");
         item.setTags(tags);
 
-        client.shortlink(apiKey, item, new ApiCallback() {
+        client.shortlink(apiKey, apiSecret, item, new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
                 latch.countDown();
@@ -306,7 +320,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        client.share(apiKey, "foobar_shortlink", "facebook", new ApiCallback() {
+        client.share(apiKey, apiSecret, "foobar_shortlink", "facebook", new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
                 latch.countDown();
@@ -348,7 +362,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         event.addMeta("foo", "bar");
         event.addMeta("foo2", "bar2");
 
-        client.log(apiKey, event, new ApiCallback() {
+        client.log(apiKey, apiSecret, event, new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
                 latch.countDown();
@@ -383,7 +397,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new NoStateApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.stdid(apiKey, cb);
+                client.stdid(apiKey, apiSecret, cb);
             }
         }.runTest();
     }
@@ -392,7 +406,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new NoStateApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.referrer(apiKey, "foobar", cb);
+                client.referrer(apiKey, apiSecret, "foobar", cb);
             }
         }.runTest();
     }
@@ -401,7 +415,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new NoStateApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.open(apiKey, "foobar", cb);
+                client.open(apiKey, apiSecret, "foobar", cb);
             }
         }.runTest();
     }
@@ -410,7 +424,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new NoStateApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.share(apiKey, null, null, cb);
+                client.share(apiKey, apiSecret, null, null, cb);
             }
         }.runTest();
     }
@@ -419,7 +433,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new NoStateApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.log(apiKey, null, cb);
+                client.log(apiKey, apiSecret, null, cb);
             }
         }.runTest();
     }
@@ -428,7 +442,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new ErrorApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.stdid(apiKey, cb);
+                client.stdid(apiKey, apiSecret, cb);
             }
         }.runTest();
     }
@@ -437,7 +451,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new ErrorApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.install(apiKey, "foobar", cb);
+                client.install(apiKey, apiSecret, "foobar", cb);
             }
         }.runTest();
     }
@@ -446,7 +460,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new ErrorApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.referrer(apiKey, "foobar", cb);
+                client.referrer(apiKey, apiSecret, "foobar", cb);
             }
         }.runTest();
     }
@@ -455,7 +469,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new ErrorApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.open(apiKey, "foobar", cb);
+                client.open(apiKey, apiSecret, "foobar", cb);
             }
         }.runTest();
     }
@@ -464,7 +478,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new ErrorApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.share(apiKey, null, null, cb);
+                client.share(apiKey, apiSecret, null, null, cb);
             }
         }.runTest();
     }
@@ -473,7 +487,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         new ErrorApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.log(apiKey, null, cb);
+                client.log(apiKey, apiSecret, null, cb);
             }
         }.runTest();
     }

@@ -12,8 +12,24 @@ import android.test.mock.MockContext;
 import android.view.LayoutInflater;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import com.sharethis.loopy.sdk.*;
+import com.sharethis.loopy.sdk.ApiCallback;
+import com.sharethis.loopy.sdk.ApiClient;
+import com.sharethis.loopy.sdk.Config;
+import com.sharethis.loopy.sdk.Device;
+import com.sharethis.loopy.sdk.Item;
+import com.sharethis.loopy.sdk.Loopy;
+import com.sharethis.loopy.sdk.LoopyState;
+import com.sharethis.loopy.sdk.MockApiClient;
+import com.sharethis.loopy.sdk.MockLoopy;
+import com.sharethis.loopy.sdk.MockShareCallback;
+import com.sharethis.loopy.sdk.MockShareClickListener;
+import com.sharethis.loopy.sdk.MockShareConfig;
+import com.sharethis.loopy.sdk.MockShareDialogAdapter;
 import com.sharethis.loopy.sdk.R;
+import com.sharethis.loopy.sdk.Session;
+import com.sharethis.loopy.sdk.ShareDialogAdapter;
+import com.sharethis.loopy.sdk.ShareDialogListener;
+import com.sharethis.loopy.sdk.ShareDialogRow;
 import com.sharethis.loopy.sdk.util.AppUtils;
 import com.sharethis.loopy.sdk.util.MockAppDataCache;
 import com.sharethis.loopy.test.util.Holder;
@@ -29,13 +45,16 @@ import java.util.List;
  */
 public class LoopyTest extends LoopyAndroidTestCase {
 
+    final String apiKey = "foobar";
+    final String apiSecret = "foobar_secret";
+
     public void testStartCallsOpen() {
 
         ApiClient apiClient = Mockito.mock(ApiClient.class);
         final Session session = Mockito.mock(Session.class);
         final Config config = Mockito.mock(Config.class);
         final LoopyState state = Mockito.spy(new LoopyState());
-        final String apiKey = "foobar";
+
 
         Mockito.when(session.getConfig()).thenReturn(config);
         Mockito.when(session.waitForStart()).thenReturn(session);
@@ -51,14 +70,14 @@ public class LoopyTest extends LoopyAndroidTestCase {
         };
 
         MockLoopy.setInstance(loopy);
-        MockLoopy.onCreate(getContext(), apiKey);
+        MockLoopy.onCreate(getContext(), apiKey, apiSecret);
 
         loopy.start(getContext());
 
         // Wait for start to complete
         assertTrue(loopy.waitForStart(3000));
 
-        Mockito.verify(apiClient).open(apiKey, null, null);
+        Mockito.verify(apiClient).open(apiKey, apiSecret, null, null);
     }
 
     public void testStartCallsSTDIDOnDeviceIDChange() throws Exception {
@@ -68,7 +87,6 @@ public class LoopyTest extends LoopyAndroidTestCase {
         final Session session = Mockito.mock(Session.class);
         final Config config = Mockito.mock(Config.class);
         final LoopyState state = Mockito.spy(new LoopyState());
-        final String apiKey = "foobar";
         final String deviceId0 = "foobar_id0";
         final String deviceId1 = "foobar_id1";
 
@@ -86,6 +104,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
             public Session getSession() {
                 return session;
             }
+
             @Override
             public Device getDevice() {
                 return device;
@@ -93,7 +112,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
         };
 
         MockLoopy.setInstance(loopy);
-        MockLoopy.onCreate(getContext(), apiKey);
+        MockLoopy.onCreate(getContext(), apiKey, apiSecret);
 
         loopy.start(getContext());
 
@@ -105,7 +124,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
         // Wait for start to complete
         assertTrue(loopy.waitForStart(3000));
 
-        Mockito.verify(apiClient).stdidDirect(apiKey);
+        Mockito.verify(apiClient).stdidDirect(apiKey, apiSecret);
     }
 
     public void testStartDoesNotCallMultipleOpens() {
@@ -114,7 +133,6 @@ public class LoopyTest extends LoopyAndroidTestCase {
         final Session session = Mockito.mock(Session.class);
         final Config config = Mockito.mock(Config.class);
         final LoopyState state = Mockito.spy(new LoopyState());
-        final String apiKey = "foobar";
 
         Mockito.when(session.waitForStart()).thenReturn(session);
         Mockito.when(session.getConfig()).thenReturn(config);
@@ -131,7 +149,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
         };
 
         MockLoopy.setInstance(loopy);
-        MockLoopy.onCreate(getContext(), apiKey);
+        MockLoopy.onCreate(getContext(), apiKey, apiSecret);
 
         loopy.start(getContext());
 
@@ -143,7 +161,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
         // Wait for start to complete
         assertTrue(loopy.waitForStart(3000));
 
-        Mockito.verify(apiClient, Mockito.times(1)).open(apiKey, null, null);
+        Mockito.verify(apiClient, Mockito.times(1)).open(apiKey, apiSecret, null, null);
     }
 
     public void testStartCallsInstall() throws Exception {
@@ -153,7 +171,6 @@ public class LoopyTest extends LoopyAndroidTestCase {
         final LoopyState state = Mockito.mock(LoopyState.class);
         final JSONObject result = Mockito.mock(JSONObject.class);
 
-        final String apiKey = "foobar";
         final String stdid = "foobar_stdid";
 
         Mockito.when(session.waitForStart()).thenReturn(session);
@@ -164,7 +181,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
         Mockito.when(result.isNull("stdid")).thenReturn(false);
         Mockito.when(result.getString("stdid")).thenReturn(stdid);
 
-        Mockito.when(apiClient.installDirect(apiKey, null)).thenReturn(result);
+        Mockito.when(apiClient.installDirect(apiKey, apiSecret, null)).thenReturn(result);
 
         MockLoopy loopy = new MockLoopy(apiClient) {
             @Override
@@ -174,14 +191,14 @@ public class LoopyTest extends LoopyAndroidTestCase {
         };
 
         MockLoopy.setInstance(loopy);
-        MockLoopy.onCreate(getContext(), apiKey);
+        MockLoopy.onCreate(getContext(), apiKey, apiSecret);
 
         loopy.start(getContext());
 
         // Wait for start to complete
         assertTrue(loopy.waitForStart(3000));
 
-        Mockito.verify(apiClient).installDirect(apiKey, null);
+        Mockito.verify(apiClient).installDirect(apiKey, apiSecret, null);
         Mockito.verify(state).setStdid(stdid);
         Mockito.verify(state).save(getContext());
     }
@@ -197,12 +214,12 @@ public class LoopyTest extends LoopyAndroidTestCase {
 
         final Context context = getLocalContext();
 
-        Loopy.onCreate(context, "foobar");
+        Loopy.onCreate(context, apiKey, apiSecret);
         Loopy.onStart(context);
         Loopy.onStop(context);
         Loopy.onDestroy(context);
 
-        Mockito.verify(lp).create(context, "foobar");
+        Mockito.verify(lp).create(context, apiKey, apiSecret);
         Mockito.verify(lp).start(context);
         Mockito.verify(lp).stop(context);
         Mockito.verify(lp).destroy(context);
@@ -268,7 +285,8 @@ public class LoopyTest extends LoopyAndroidTestCase {
     }
 
     public void testStaticSetApiKey() {
-        final String key = "foobar";
+        final String key = "foo";
+        final String secret = "bar";
 
         MockShareConfig config = Mockito.mock(MockShareConfig.class);
 
@@ -277,13 +295,15 @@ public class LoopyTest extends LoopyAndroidTestCase {
 
         MockLoopy.setInstance(lp);
 
-        Loopy.setApiKey(key);
+        Loopy.setApiKey(key, secret);
+
         Mockito.verify(config).setApiKey(key);
+        Mockito.verify(config).setApiSecret(secret);
+
     }
 
     public void testShortlink() {
 
-        final String apiKey = "foobar";
         final ApiClient client = Mockito.mock(ApiClient.class);
         final MockShareConfig config = Mockito.mock(MockShareConfig.class);
         final Item item = Mockito.mock(Item.class);
@@ -301,14 +321,14 @@ public class LoopyTest extends LoopyAndroidTestCase {
         loopy.setConfig(config);
 
         Mockito.when(config.getApiKey()).thenReturn(apiKey);
+        Mockito.when(config.getApiSecret()).thenReturn(apiSecret);
 
         loopy.shortlink(item, callback);
 
-        Mockito.verify(client).shortlink(apiKey, item, callback);
+        Mockito.verify(client).shortlink(apiKey, apiSecret, item, callback);
     }
 
     public void testShare() {
-        final String apiKey = "foobar";
         final String channel = "foobar_channel";
         final String shortlink = "foobar_shortlink";
         final ApiClient client = Mockito.mock(ApiClient.class);
@@ -328,10 +348,11 @@ public class LoopyTest extends LoopyAndroidTestCase {
 
         Mockito.when(item.getShortlink()).thenReturn(shortlink);
         Mockito.when(config.getApiKey()).thenReturn(apiKey);
+        Mockito.when(config.getApiSecret()).thenReturn(apiSecret);
 
         loopy.share(item, channel, callback);
 
-        Mockito.verify(client).share(apiKey, shortlink, channel, callback);
+        Mockito.verify(client).share(apiKey, apiSecret, shortlink, channel, callback);
     }
 
     public void testShareFromIntent() throws PackageManager.NameNotFoundException {
@@ -364,9 +385,18 @@ public class LoopyTest extends LoopyAndroidTestCase {
 
     public void testGetAppsList() {
 
-        ResolveInfo info0 = new ResolveInfo() { @Override public String toString() { return "0"; } };
-        ResolveInfo info1 = new ResolveInfo() { @Override public String toString() { return "1"; } };
-        ResolveInfo info2 = new ResolveInfo() { @Override public String toString() { return "2"; } };
+        ResolveInfo info0 = new ResolveInfo() {
+            @Override
+            public String toString() { return "0"; }
+        };
+        ResolveInfo info1 = new ResolveInfo() {
+            @Override
+            public String toString() { return "1"; }
+        };
+        ResolveInfo info2 = new ResolveInfo() {
+            @Override
+            public String toString() { return "2"; }
+        };
 
         List<ResolveInfo> infos = Arrays.asList(info0, info1, info2);
 
@@ -394,7 +424,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
         assertSame(info2, row1.left);
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings ("unchecked")
     public void testDoShareDialog() throws Throwable {
 
         final String contentType = "*/*";
@@ -426,7 +456,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
             }
         };
 
-        final AlertDialog dialog = Mockito.spy(new MockAlertDialog( context ));
+        final AlertDialog dialog = Mockito.spy(new MockAlertDialog(context));
 
         final MockLoopy loopy = new MockLoopy() {
             @Override
