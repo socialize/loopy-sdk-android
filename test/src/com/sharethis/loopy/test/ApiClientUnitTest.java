@@ -37,6 +37,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
     LoopyState state;
     Device.WifiState wifiState;
     String apiKey = "foobar_api_key";
+    String stdid = "foobar_stdid";
     String apiSecret = "foobar_api_secret";
 
     final Holder<JSONObject> result = new Holder<JSONObject>();
@@ -124,7 +125,7 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
 
         final CountDownLatch latch = new CountDownLatch(1);
 
-        client.install(apiKey, apiSecret, referrer, new ApiCallback() {
+        client.install(apiKey, apiSecret, stdid, referrer, new ApiCallback() {
             @Override
             public void onSuccess(JSONObject result) {
                 latch.countDown();
@@ -224,43 +225,6 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
 
         // Load the test file
         JSONObject expected = new JSONObject(TestUtils.getAssetFile(getLocalContext(), "open.json"));
-
-        // Set the version on expected
-        expected.getJSONObject("client").put("version", String.valueOf(Loopy.VERSION));
-
-        JsonAssert.assertJsonEquals(expected, actual);
-    }
-
-    public void testSTDID() throws Exception {
-
-        final Holder<Throwable> error = new Holder<Throwable>();
-
-        final CountDownLatch latch = new CountDownLatch(1);
-
-        client.stdid(apiKey, apiSecret, new ApiCallback() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                latch.countDown();
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                error.set(e);
-                latch.countDown();
-            }
-        });
-
-        assertTrue(latch.await(10, TimeUnit.SECONDS));
-
-        assertNull(error.get());
-
-        assertEquals("stdid", endpointResult.get());
-
-        // Make sure the request is as we expect
-        JSONObject actual = result.get();
-
-        // Load the test file
-        JSONObject expected = new JSONObject(TestUtils.getAssetFile(getLocalContext(), "stdid.json"));
 
         // Set the version on expected
         expected.getJSONObject("client").put("version", String.valueOf(Loopy.VERSION));
@@ -393,15 +357,6 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         JsonAssert.assertJsonEquals(expected, actual);
     }
 
-    public void testStidNoState() throws JSONException {
-        new NoStateApiRunner() {
-            @Override
-            void doCall(ApiClient client, ApiCallback cb) {
-                client.stdid(apiKey, apiSecret, cb);
-            }
-        }.runTest();
-    }
-
     public void testReferrerNoState() throws JSONException {
         new NoStateApiRunner() {
             @Override
@@ -438,20 +393,11 @@ public class ApiClientUnitTest extends LoopyAndroidTestCase {
         }.runTest();
     }
 
-    public void testStidError() throws JSONException {
-        new ErrorApiRunner() {
-            @Override
-            void doCall(ApiClient client, ApiCallback cb) {
-                client.stdid(apiKey, apiSecret, cb);
-            }
-        }.runTest();
-    }
-
     public void testInstallError() throws JSONException {
         new ErrorApiRunner() {
             @Override
             void doCall(ApiClient client, ApiCallback cb) {
-                client.install(apiKey, apiSecret, "foobar", cb);
+                client.install(apiKey, apiSecret, stdid, "foobar", cb);
             }
         }.runTest();
     }

@@ -30,7 +30,6 @@ public class ApiClient {
     public static final String REFERRER = "referrer";
     public static final String OPEN = "open";
     public static final String LOG = "log";
-    public static final String STDID = "stdid";
 
     public static final String AUTH_HEADER_KEY = "X-LoopyAppID";
     public static final String AUTH_HEADER_SECRET = "X-LoopyKey";
@@ -50,76 +49,19 @@ public class ApiClient {
     }
 
     /**
-     * Correlates to the /stdid endpoint of the Loopy API.
-     *
-     * @param callback A callback to handle the result.
-     */
-    public void stdid(String apiKey, String apiSecret, ApiCallback callback) {
-
-        if (Logger.isDebugEnabled()) {
-            Logger.d("stdid called");
-        }
-
-        try {
-            LoopyState state = getState();
-
-            if (state.hasSTDID()) {
-                JSONObject payload = getSTDIDPayload(state);
-                callAsync(getAuthHeader(apiKey, apiSecret), payload, STDID, true, callback);
-            } else {
-                LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling stdid", LoopyException.PARAMETER_MISSING);
-                if (callback != null) {
-                    callback.onError(error);
-                }
-                Logger.e(error);
-            }
-        } catch (JSONException e) {
-            Logger.e(e);
-            if (callback != null) {
-                callback.onError(e);
-            }
-        }
-    }
-
-    JSONObject stdidDirect(String apiKey, String apiSecret) throws Exception {
-        if (Logger.isDebugEnabled()) {
-            Logger.d("stdid called");
-        }
-
-        LoopyState state = getState();
-        if (state.hasSTDID()) {
-            JSONObject payload = getSTDIDPayload(state);
-            return call(getAuthHeader(apiKey, apiSecret), payload, STDID, true);
-        } else {
-            throw new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling stdid", LoopyException.PARAMETER_MISSING);
-        }
-    }
-
-    JSONObject getSTDIDPayload(LoopyState state) throws JSONException {
-        JSONObject payload = newJSONObject();
-        payload.put("stdid", state.getSTDID());
-        payload.put("timestamp", getCurrentTimestamp());
-        addDevice(payload, true);
-        addApp(payload);
-        addClient(payload);
-        return payload;
-    }
-
-
-    /**
      * Correlates to the /install endpoint of the Loopy API
      *
      * @param referrer The referrer that lead to the installation of the app.
      * @param callback A callback to handle the result.
      */
-    public void install(String apiKey, String apiSecret, String referrer, ApiCallback callback) {
+    public void install(String apiKey, String apiSecret, String stdid, String referrer, ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
             Logger.d("install called for " + referrer);
         }
 
         try {
-            JSONObject payload = getInstallPayload(referrer);
+            JSONObject payload = getInstallPayload(stdid, referrer);
             callAsync(getAuthHeader(apiKey, apiSecret), payload, INSTALL, true, callback);
         } catch (JSONException e) {
             Logger.e(e);
@@ -129,16 +71,17 @@ public class ApiClient {
         }
     }
 
-    JSONObject installDirect(String apiKey, String apiSecret, String referrer) throws Exception {
+    void installDirect(String apiKey, String apiSecret, String stdid, String referrer) throws Exception {
         if (Logger.isDebugEnabled()) {
             Logger.d("install called for " + referrer);
         }
-        JSONObject payload = getInstallPayload(referrer);
-        return call(getAuthHeader(apiKey, apiSecret), payload, INSTALL, true);
+        JSONObject payload = getInstallPayload(stdid, referrer);
+        call(getAuthHeader(apiKey, apiSecret), payload, INSTALL, true);
     }
 
-    JSONObject getInstallPayload(String referrer) throws JSONException {
+    JSONObject getInstallPayload(String stdid, String referrer) throws JSONException {
         JSONObject payload = newJSONObject();
+        payload.put("stdid", stdid);
         payload.put("timestamp", getCurrentTimestamp());
         payload.put("referrer", referrer);
         addDevice(payload, true);
@@ -263,6 +206,12 @@ public class ApiClient {
             LoopyState state = getState();
 
             if (state.hasSTDID()) {
+
+                Device device = getDevice();
+
+                if (device != null) {
+                    payload.put("md5id", device.getMd5Id());
+                }
 
                 payload.put("stdid", state.getSTDID());
                 payload.put("timestamp", getCurrentTimestamp());
@@ -633,6 +582,8 @@ public class ApiClient {
     protected void addDevice(JSONObject payload, boolean id) throws JSONException {
         Device device = getDevice();
         if (device != null) {
+            payload.put("md5id", device.getMd5Id());
+
             JSONObject d = newJSONObject();
 
             if (id) {

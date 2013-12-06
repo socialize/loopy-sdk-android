@@ -13,12 +13,7 @@ public class MockApiClient extends ApiClient {
     }
 
     @Override
-    public JSONObject stdidDirect(String apiKey, String apiSecret) throws Exception {
-        return super.stdidDirect(apiKey, apiSecret);
-    }
-
-    @Override
-    public JSONObject installDirect(String apiKey, String apiSecret, String referrer) throws Exception {
-        return super.installDirect(apiKey, apiSecret, referrer);
+    public void installDirect(String apiKey, String apiSecret, String stdid, String referrer) throws Exception {
+        super.installDirect(apiKey, apiSecret, stdid, referrer);
     }
 }

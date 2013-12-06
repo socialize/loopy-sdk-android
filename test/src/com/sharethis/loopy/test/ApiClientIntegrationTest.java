@@ -28,6 +28,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
     ApiClient apiClient;
     String apiKey = "foobar_api_key";
     String apiSecret = "foobar_api_secret";
+    String stdid = "foobar_stdid";
 
     @Override
     public void setUp() throws Exception {
@@ -54,7 +55,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
         new ApiTestRunner() {
             @Override
             void doApiCall(ApiClient client, ApiCallback callback) {
-                client.install(apiKey, apiSecret, "test_referrer", callback);
+                client.install(apiKey, apiSecret, stdid, "test_referrer", callback);
             }
 
             @Override
@@ -149,21 +150,6 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
         }.doTest();
     }
 
-    public void testSTDID() throws Exception {
-        new ApiTestRunner() {
-            @Override
-            void doApiCall(ApiClient client, ApiCallback callback) {
-                client.stdid(apiKey, apiSecret, callback);
-            }
-
-            @Override
-            void assertResult(JSONObject response) {
-                assertNotNull(response);
-                JsonAssert.assertHasValueAtLocation(response, "stdid");
-            }
-        }.doTest();
-    }
-
     public void testClientTimeout() throws Exception {
         final Holder<JSONObject> success = new Holder<JSONObject>();
         final Holder<Throwable> fail = new Holder<Throwable>();
@@ -173,7 +159,7 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
             @Override
             void doApiCall(ApiClient client, ApiCallback callback) {
                 // Test app has 4 second timeout
-                client.stdid(apiKey, apiSecret, LoopyAccess.wrapDelay(callback, 5000));
+                client.open(apiKey, apiSecret, null, LoopyAccess.wrapDelay(callback, 5000));
             }
 
             @Override
@@ -187,7 +173,6 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
             }
         }.doTestWithError();
 
-
         assertNull(success.get());
 
         Throwable error = fail.get();
@@ -198,7 +183,6 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
         LoopyException loopyException = (LoopyException) error;
 
         assertEquals(LoopyException.CLIENT_TIMEOUT, loopyException.getCode());
-
     }
 
     abstract class ApiTestRunner {

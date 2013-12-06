@@ -7,6 +7,9 @@ import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import com.sharethis.loopy.sdk.util.AppUtils;
+import com.sharethis.loopy.sdk.util.MD5Util;
+
+import java.security.NoSuchAlgorithmException;
 
 /**
  * @author Jason Polites
@@ -16,6 +19,7 @@ public class Device {
 	private String modelName;
 	private String androidVersion;
 	private String androidId;
+    private String md5Id;
 
     private String carrier;
     private boolean initialized = false;
@@ -26,6 +30,14 @@ public class Device {
 		modelName = android.os.Build.MODEL;
 		androidVersion = String.valueOf(Build.VERSION.SDK_INT);
 		androidId = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        try {
+            md5Id = MD5Util.hash(androidId);
+        } catch (NoSuchAlgorithmException e) {
+            Logger.e(e);
+            md5Id = androidId;
+        }
+
         carrier = getCarrier(context);
         getWifiState(context);
         initialized = true;
@@ -54,6 +66,10 @@ public class Device {
 
     public WifiState getWifiState() {
         return wifiState;
+    }
+
+    public String getMd5Id() {
+        return md5Id;
     }
 
     WifiState getWifiState(Context context) {

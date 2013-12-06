@@ -21,6 +21,7 @@ import org.json.JSONObject;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -444,13 +445,6 @@ public class Loopy {
 
                     if (session.getState() != null) {
 
-                        Device device = getDevice();
-                        String androidId = null;
-
-                        if (device != null) {
-                            androidId = device.getAndroidId();
-                        }
-
                         if (session.getState().hasSTDID()) {
 
                             long currentTime = System.currentTimeMillis();
@@ -466,19 +460,6 @@ public class Loopy {
 
                             session.getState().setLastOpenTime(currentTime);
 
-                            // Check device ID
-                            if (androidId != null && (session.getState().getDeviceId() == null || !session.getState().getDeviceId().equals(androidId))) {
-                                try {
-                                    JSONObject result = apiClient.stdidDirect(
-                                            config.getApiKey(),
-                                            config.getApiSecret());
-                                    session.getState().setStdid(JSONUtils.getString(result, "stdid"));
-                                    session.getState().setDeviceId(androidId);
-                                } catch (Exception e) {
-                                    Logger.e(e);
-                                }
-                            }
-
                             try {
                                 session.getState().save(context);
                             } catch (Exception e) {
@@ -486,16 +467,22 @@ public class Loopy {
                             }
                         } else {
                             try {
-                                JSONObject result = apiClient.installDirect(
+                                final String stdid = UUID.randomUUID().toString();
+
+                                apiClient.installDirect(
                                         config.getApiKey(),
-                                        config.getApiSecret(), null);
-                                session.getState().setStdid(JSONUtils.getString(result, "stdid"));
-                                session.getState().setDeviceId(androidId);
+                                        config.getApiSecret(),
+                                        stdid,
+                                        null);
+
+                                session.getState().setStdid(stdid);
                                 session.getState().save(context);
                             } catch (Exception e) {
                                 Logger.e(e);
                             }
                         }
+                    } else {
+                        Logger.w("No session state during start.  This should not happen");
                     }
                 } finally {
                     startLatch.countDown();

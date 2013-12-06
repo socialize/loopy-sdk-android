@@ -13,7 +13,6 @@ public class LoopyState {
     static final String PREFS_NAME = "STLoopyPrefs";
 
     private String stdid;
-    private String deviceId;
     private String referrer;
     private boolean loaded;
     private long lastOpenTime = 0;
@@ -105,14 +104,6 @@ public class LoopyState {
 
     public void setLastOpenTime(long lastOpenTime) {
         this.lastOpenTime = lastOpenTime;
-    }
-
-    public String getDeviceId() {
-        return deviceId;
-    }
-
-    public void setDeviceId(String deviceId) {
-        this.deviceId = deviceId;
     }
 
     protected void clear(Context context) {
