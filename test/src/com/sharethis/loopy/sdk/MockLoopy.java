@@ -145,5 +145,8 @@ public class MockLoopy extends Loopy {
         return super.waitForStart(timeout);
     }
 
-
+    @Override
+    public String generateUUID() {
+        return super.generateUUID();
+    }
 }

@@ -61,7 +61,6 @@ public class ApiClientIntegrationTest extends LoopyAndroidTestCase {
             @Override
             void assertResult(JSONObject response) {
                 assertNotNull(response);
-                JsonAssert.assertHasValueAtLocation(response, "stdid");
             }
         }.doTest();
     }

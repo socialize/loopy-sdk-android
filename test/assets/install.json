@@ -1,4 +1,5 @@
 {
+    "stdid" : "foobar_stdid",
     "timestamp": 1234567890,
     "referrer": "foobar_referrer",
     "device" : {

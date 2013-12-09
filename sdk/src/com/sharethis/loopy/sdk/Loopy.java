@@ -467,7 +467,7 @@ public class Loopy {
                             }
                         } else {
                             try {
-                                final String stdid = UUID.randomUUID().toString();
+                                final String stdid = generateUUID();
 
                                 apiClient.installDirect(
                                         config.getApiKey(),
@@ -490,6 +490,11 @@ public class Loopy {
                 return null;
             }
         }.execute();
+    }
+
+    // Mockable
+    String generateUUID() {
+        return UUID.randomUUID().toString();
     }
 
     protected void stop(Context context) {

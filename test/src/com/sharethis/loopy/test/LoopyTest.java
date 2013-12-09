@@ -122,23 +122,22 @@ public class LoopyTest extends LoopyAndroidTestCase {
         MockApiClient apiClient = Mockito.mock(MockApiClient.class);
         final Session session = Mockito.mock(Session.class);
         final LoopyState state = Mockito.mock(LoopyState.class);
-        final JSONObject result = Mockito.mock(JSONObject.class);
 
-        final String stdid = "foobar_stdid";
+        final String uuid = "foobar_uuid";
 
         Mockito.when(session.waitForStart()).thenReturn(session);
         Mockito.when(session.getState()).thenReturn(state);
         Mockito.when(state.hasSTDID()).thenReturn(false); // We have NOT been opened
 
-        Mockito.when(result.has("stdid")).thenReturn(true);
-        Mockito.when(result.isNull("stdid")).thenReturn(false);
-        Mockito.when(result.getString("stdid")).thenReturn(stdid);
-
-
         MockLoopy loopy = new MockLoopy(apiClient) {
             @Override
             public Session getSession() {
                 return session;
+            }
+
+            @Override
+            public String generateUUID() {
+                return uuid;
             }
         };
 
@@ -150,8 +149,8 @@ public class LoopyTest extends LoopyAndroidTestCase {
         // Wait for start to complete
         assertTrue(loopy.waitForStart(3000));
 
-        Mockito.verify(apiClient).installDirect(apiKey, apiSecret, stdid, null);
-        Mockito.verify(state).setStdid(stdid);
+        Mockito.verify(apiClient).installDirect(apiKey, apiSecret, uuid, null);
+        Mockito.verify(state).setStdid(uuid);
         Mockito.verify(state).save(getContext());
     }
 
