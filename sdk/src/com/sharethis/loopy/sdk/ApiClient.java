@@ -46,7 +46,9 @@ public class ApiClient {
     }
 
     public void stop() {
-        httpClientFactory.stop();
+        if(httpClientFactory != null) {
+            httpClientFactory.stop();
+        }
     }
 
     /**

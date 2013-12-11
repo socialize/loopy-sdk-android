@@ -36,12 +36,14 @@ public class Loopy {
 
     static Loopy instance = new Loopy(new ApiClient());
 
+    // TODO: Should be part of loopy instance.
+    private static BroadcastReceiver installReceiver;
+
     private ApiClient apiClient;
     private Device device;
     private App app;
     private Geo geo;
     private int instances = 0;
-    private BroadcastReceiver installReceiver;
     private boolean receiverRegistered = false;
     private CountDownLatch startLatch;
 
@@ -431,19 +433,8 @@ public class Loopy {
 
         session.start(context);
 
-        if (!receiverRegistered) {
-            this.installReceiver = new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    instance.trackInstall(context, intent);
-                }
-            };
-
-            IntentFilter intentFilter = new IntentFilter();
-            intentFilter.addAction(INSTALL_ACTION);
-            context.registerReceiver(installReceiver, intentFilter);
-            receiverRegistered = true;
-        }
+        unregisterReceiver(context);
+        registerReceiver(context);
 
         // Check for install or open
         new AsyncTask<Void, Void, Void>() {
@@ -516,19 +507,40 @@ public class Loopy {
         return UUID.randomUUID().toString();
     }
 
+    protected void registerReceiver(Context context) {
+        if (!receiverRegistered) {
+
+            if(installReceiver == null) {
+                installReceiver = new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        instance.trackInstall(context, intent);
+                    }
+                };
+            }
+
+            IntentFilter intentFilter = new IntentFilter();
+            intentFilter.addAction(INSTALL_ACTION);
+            context.registerReceiver(installReceiver, intentFilter);
+            receiverRegistered = true;
+        }
+    }
+
+    protected void unregisterReceiver(Context context) {
+        if(installReceiver != null) {
+            try {
+                context.unregisterReceiver(installReceiver);
+            } catch (Exception ignore) {}
+            receiverRegistered = false;
+        }
+    }
+
     protected void stop(Context context) {
         if (geo != null) {
             geo.onStop(context);
         }
 
-        if (receiverRegistered) {
-
-            try {
-                context.unregisterReceiver(installReceiver);
-            } catch (Exception ignore) {}
-
-            receiverRegistered = false;
-        }
+        unregisterReceiver(context);
 
         apiClient.stop();
 
