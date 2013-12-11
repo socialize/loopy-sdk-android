@@ -1,6 +1,5 @@
 package com.sharethis.loopy.sdk;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,7 +14,6 @@ import android.view.LayoutInflater;
 import android.widget.ListView;
 import com.sharethis.loopy.sdk.util.AppDataCache;
 import com.sharethis.loopy.sdk.util.AppUtils;
-import com.sharethis.loopy.sdk.util.JSONUtils;
 import com.sharethis.loopy.sdk.util.StringUtils;
 import org.json.JSONObject;
 
@@ -32,7 +30,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Loopy {
 
-    public static String VERSION = "0.01";
+    public static String VERSION = "1.0";
 
     static final String INSTALL_ACTION = "STInstallAction";
 
