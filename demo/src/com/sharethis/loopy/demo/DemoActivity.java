@@ -25,7 +25,7 @@ public class DemoActivity extends Activity {
         setContentView(R.layout.main);
 
         // Call onCreate and pass in your API key and secret
-        Loopy.onCreate(this, "e3xjjqq3pcuwsqmzh7swewv6", "dsfgrtwhi73937ehodlsoi0");
+        Loopy.onCreate(this, "c64fc5c7-2379-4249-8ccd-ef33d5bfac52", "_sandbox_key_sandbox");
 
         // The following code is just for this demo app
         ArrayAdapter<String> optionsAdapter = new ArrayAdapter<String>(this, R.layout.row, new String[]{

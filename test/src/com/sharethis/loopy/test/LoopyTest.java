@@ -48,18 +48,19 @@ public class LoopyTest extends LoopyAndroidTestCase {
     final String apiKey = "foobar";
     final String apiSecret = "foobar_secret";
 
-    public void testStartCallsOpen() {
+    public void testStartCallsOpen() throws Exception {
 
-        ApiClient apiClient = Mockito.mock(ApiClient.class);
+        MockApiClient apiClient = Mockito.mock(MockApiClient.class);
         final Session session = Mockito.mock(Session.class);
         final Config config = Mockito.mock(Config.class);
         final LoopyState state = Mockito.spy(new LoopyState());
-
+        final String stdid = "foobar";
 
         Mockito.when(session.getConfig()).thenReturn(config);
         Mockito.when(session.waitForStart()).thenReturn(session);
         Mockito.when(session.getState()).thenReturn(state);
         Mockito.when(state.hasSTDID()).thenReturn(true); // We have already been opened
+        Mockito.when(state.getSTDID()).thenReturn(stdid);
         Mockito.when(config.getSessionTimeoutSeconds()).thenReturn(60);
 
         MockLoopy loopy = new MockLoopy(apiClient) {
@@ -77,22 +78,23 @@ public class LoopyTest extends LoopyAndroidTestCase {
         // Wait for start to complete
         assertTrue(loopy.waitForStart(3000));
 
-        Mockito.verify(apiClient).open(apiKey, apiSecret, null, null);
+        Mockito.verify(apiClient).openDirect(apiKey, apiSecret, stdid, null);
     }
 
-    public void testStartDoesNotCallMultipleOpens() {
+    public void testStartDoesNotCallMultipleOpens() throws Exception {
 
-        ApiClient apiClient = Mockito.mock(ApiClient.class);
+        MockApiClient apiClient = Mockito.mock(MockApiClient.class);
         final Session session = Mockito.mock(Session.class);
         final Config config = Mockito.mock(Config.class);
         final LoopyState state = Mockito.spy(new LoopyState());
+        final String stdid = "foobar";
 
         Mockito.when(session.waitForStart()).thenReturn(session);
         Mockito.when(session.getConfig()).thenReturn(config);
         Mockito.when(session.getState()).thenReturn(state);
         Mockito.when(state.hasSTDID()).thenReturn(true); // We have already been opened
+        Mockito.when(state.getSTDID()).thenReturn(stdid);
         Mockito.when(config.getSessionTimeoutSeconds()).thenReturn(60);
-
 
         MockLoopy loopy = new MockLoopy(apiClient) {
             @Override
@@ -114,7 +116,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
         // Wait for start to complete
         assertTrue(loopy.waitForStart(3000));
 
-        Mockito.verify(apiClient, Mockito.times(1)).open(apiKey, apiSecret, null, null);
+        Mockito.verify(apiClient, Mockito.times(1)).openDirect(apiKey, apiSecret, stdid, null);
     }
 
     public void testStartCallsInstall() throws Exception {

@@ -464,18 +464,18 @@ public class Loopy {
                             long lastOpenTime = session.getState().getLastOpenTime();
 
                             if (currentTime - lastOpenTime >= sessionTimeoutMS) {
-                                // TODO: get referrer
-                                apiClient.open(
-                                        config.getApiKey(),
-                                        config.getApiSecret(), null, null);
-                            }
+                                try {
+                                    apiClient.openDirect(
+                                            config.getApiKey(),
+                                            config.getApiSecret(),
+                                            session.getState().getSTDID(),
+                                            null);
 
-                            session.getState().setLastOpenTime(currentTime);
-
-                            try {
-                                session.getState().save(context);
-                            } catch (Exception e) {
-                                Logger.e(e);
+                                    session.getState().setLastOpenTime(currentTime);
+                                    session.getState().save(context);
+                                } catch (Exception e) {
+                                    Logger.e(e);
+                                }
                             }
                         } else {
                             try {

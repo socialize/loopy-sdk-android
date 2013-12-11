@@ -62,7 +62,7 @@ public class ApiClient {
         }
 
         try {
-            JSONObject payload = getInstallPayload(stdid, referrer);
+            JSONObject payload = getInstallOpenPayload(stdid, referrer, true);
             callAsync(getAuthHeader(apiKey, apiSecret), payload, INSTALL, true, callback);
         } catch (JSONException e) {
             Logger.e(e);
@@ -76,20 +76,65 @@ public class ApiClient {
         if (Logger.isDebugEnabled()) {
             Logger.d("install called for " + referrer);
         }
-        JSONObject payload = getInstallPayload(stdid, referrer);
+        JSONObject payload = getInstallOpenPayload(stdid, referrer, true);
         call(getAuthHeader(apiKey, apiSecret), payload, INSTALL, true);
     }
 
-    JSONObject getInstallPayload(String stdid, String referrer) throws JSONException {
+
+    /**
+     * Correlates to the /open endpoint of the Loopy API
+     *
+     * @param referrer The referrer that lead to the open of the app.
+     * @param callback A callback to handle the result.
+     */
+    public void open(String apiKey, String apiSecret, String referrer, ApiCallback callback) {
+
+        if (Logger.isDebugEnabled()) {
+            Logger.d("open called for " + referrer);
+        }
+
+        try {
+            LoopyState state = getState();
+
+            if (state.hasSTDID()) {
+                JSONObject payload = getInstallOpenPayload(state.getSTDID(), referrer, false);
+                callAsync(getAuthHeader(apiKey, apiSecret), payload, OPEN, false, callback);
+            } else {
+                LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling open", LoopyException.PARAMETER_MISSING);
+                if (callback != null) {
+                    callback.onError(error);
+                }
+                Logger.e(error);
+            }
+        } catch (JSONException e) {
+            Logger.e(e);
+            if (callback != null) {
+                callback.onError(e);
+            }
+        }
+    }
+
+    void openDirect(String apiKey, String apiSecret, String stdid, String referrer) throws Exception {
+
+        if (Logger.isDebugEnabled()) {
+            Logger.d("open called for " + referrer);
+        }
+        JSONObject payload = getInstallOpenPayload(stdid, referrer, false);
+        call(getAuthHeader(apiKey, apiSecret), payload, OPEN, true);
+    }
+
+
+    JSONObject getInstallOpenPayload(String stdid, String referrer, boolean deviceId) throws JSONException {
         JSONObject payload = newJSONObject();
         payload.put("stdid", stdid);
         payload.put("timestamp", getCurrentTimestamp());
         payload.put("referrer", referrer);
-        addDevice(payload, true);
+        addDevice(payload, deviceId);
         addApp(payload);
         addClient(payload);
         return payload;
     }
+
 
 
     /**
@@ -122,50 +167,6 @@ public class ApiClient {
                 callAsync(getAuthHeader(apiKey, apiSecret), payload, REFERRER, false, callback);
             } else {
                 LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling referrer", LoopyException.PARAMETER_MISSING);
-                if (callback != null) {
-                    callback.onError(error);
-                }
-                Logger.e(error);
-            }
-        } catch (JSONException e) {
-            Logger.e(e);
-            if (callback != null) {
-                callback.onError(e);
-            }
-        }
-    }
-
-
-    /**
-     * Correlates to the /open endpoint of the Loopy API
-     *
-     * @param referrer The referrer that lead to the open of the app.
-     * @param callback A callback to handle the result.
-     */
-    public void open(String apiKey, String apiSecret, String referrer, ApiCallback callback) {
-
-        if (Logger.isDebugEnabled()) {
-            Logger.d("open called");
-        }
-
-        try {
-            JSONObject payload = newJSONObject();
-
-            LoopyState state = getState();
-
-            if (state.hasSTDID()) {
-
-                payload.put("stdid", state.getSTDID());
-                payload.put("timestamp", getCurrentTimestamp());
-                payload.put("referrer", referrer);
-
-                addDevice(payload);
-                addApp(payload);
-                addClient(payload);
-
-                callAsync(getAuthHeader(apiKey, apiSecret), payload, OPEN, false, callback);
-            } else {
-                LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling open", LoopyException.PARAMETER_MISSING);
                 if (callback != null) {
                     callback.onError(error);
                 }

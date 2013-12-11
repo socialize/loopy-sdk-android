@@ -16,4 +16,9 @@ public class MockApiClient extends ApiClient {
     public void installDirect(String apiKey, String apiSecret, String stdid, String referrer) throws Exception {
         super.installDirect(apiKey, apiSecret, stdid, referrer);
     }
+
+    @Override
+    public void openDirect(String apiKey, String apiSecret, String stdid, String referrer) throws Exception {
+        super.openDirect(apiKey, apiSecret, stdid, referrer);
+    }
 }
