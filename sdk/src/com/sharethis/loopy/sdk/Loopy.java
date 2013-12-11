@@ -1,5 +1,6 @@
 package com.sharethis.loopy.sdk;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -84,6 +85,15 @@ public class Loopy {
      */
     public static void onStart(Context context) {
         instance.start(context);
+    }
+
+    /**
+     * Optional variation of onStart that takes a callback
+     * @param context The current context.
+     * @param callback A callback that will be notified when the start process has completed.
+     */
+    public static void onStart(Context context, StartCallback callback) {
+        instance.start(context, callback);
     }
 
     /**
@@ -407,7 +417,11 @@ public class Loopy {
         instances++;
     }
 
-    protected void start(final Context context) {
+    protected void start(Context context) {
+        start(context, null);
+    }
+
+    protected void start(final Context context, final StartCallback cb) {
 
         startLatch = new CountDownLatch(1);
 
@@ -488,6 +502,13 @@ public class Loopy {
                     startLatch.countDown();
                 }
                 return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if(cb != null) {
+                    cb.onComplete();
+                }
             }
         }.execute();
     }

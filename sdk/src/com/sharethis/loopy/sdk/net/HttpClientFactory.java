@@ -96,6 +96,7 @@ public class HttpClientFactory {
         else {
             monitor.trigger();
         }
+
         return client;
     }
 

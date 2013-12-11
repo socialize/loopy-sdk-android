@@ -121,6 +121,11 @@ public class MockLoopy extends Loopy {
     }
 
     @Override
+    public void start(Context context, StartCallback cb) {
+        super.start(context, cb);
+    }
+
+    @Override
     public void start(Context context) {
         super.start(context);
     }

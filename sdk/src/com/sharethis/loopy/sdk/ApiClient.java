@@ -15,6 +15,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.util.HashMap;
 import java.util.Map;
@@ -445,7 +446,12 @@ public class ApiClient {
                         if (error instanceof SocketTimeoutException) {
                             cb.onError(LoopyException.wrap(error, LoopyException.CLIENT_TIMEOUT));
                         } else {
-                            cb.onError(error);
+                            // Hack for Android <= 2.3
+                            if(error instanceof IOException && error.getMessage().equals("Request aborted")) {
+                                cb.onError(LoopyException.wrap(error, LoopyException.CLIENT_TIMEOUT));
+                            } else {
+                                cb.onError(error);
+                            }
                         }
                     } else {
                         // Check for api error
