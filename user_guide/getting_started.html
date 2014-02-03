@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting Started &mdash; Loopy Android SDK 1_0_rc3 (b125) documentation</title>
+    <title>Getting Started &mdash; Loopy Android SDK 1_0_rc4 (b147) documentation</title>
     
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1_0_rc3 (b125)',
+        VERSION:     '1_0_rc4 (b147)',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  false
@@ -25,9 +25,9 @@
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="shortcut icon" href="static/favicon.ico"/>
-    <link rel="top" title="Loopy Android SDK 1_0_rc3 (b125) documentation" href="index.html?v=1_0_rc3" />
-    <link rel="next" title="Using the Share Dialog" href="share_dialog.html?v=1_0_rc3" />
-    <link rel="prev" title="Loopy Android SDK" href="index.html?v=1_0_rc3" />
+    <link rel="top" title="Loopy Android SDK 1_0_rc4 (b147) documentation" href="index.html?v=1_0_rc4" />
+    <link rel="next" title="Using the Share Dialog" href="share_dialog.html?v=1_0_rc4" />
+    <link rel="prev" title="Loopy Android" href="index.html?v=1_0_rc4" />
 <script type="text/javascript" src="static/loopy.js"></script>
 
   </head>
@@ -36,12 +36,12 @@
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="share_dialog.html?v=1_0_rc3" title="Using the Share Dialog"
+          <a href="share_dialog.html?v=1_0_rc4" title="Using the Share Dialog"
              accesskey="N">next</a></li>
         <li class="right" >
-          <a href="index.html?v=1_0_rc3" title="Loopy Android SDK"
+          <a href="index.html?v=1_0_rc4" title="Loopy Android"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html?v=1_0_rc3">Loopy Android SDK 1_0_rc3 (b125) documentation</a> &raquo;</li> 
+        <li><a href="index.html?v=1_0_rc4">Loopy Android SDK 1_0_rc4 (b147) documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -53,8 +53,8 @@
   <div class="section" id="getting-started">
 <h1>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h1>
 <p>Implementing Loopy ™ with your app is a simple 4 step process:</p>
-<div class="section" id="install-the-sdk">
-<h2>1. Install the SDK<a class="headerlink" href="#install-the-sdk" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="install-the-library">
+<h2>1. Install the Library<a class="headerlink" href="#install-the-library" title="Permalink to this headline">¶</a></h2>
 <blockquote>
 <div><h4><a href="javascript:void(toggleDiv('gradle'));">Using Android Studio / Gradle &#10140;</a></h4><div class="hidden container" id="gradle">
 <div class="admonition note">
@@ -64,11 +64,11 @@
 expected.</p>
 <p class="last">As a result some of the steps below may become unnecessary in future versions of Android Studio.</p>
 </div>
-<p>Locate the <em>sdk</em> folder in your Loopy SDK distribution:</p>
+<p>Locate the <em>dist</em> folder in your Loopy distribution:</p>
 <a class="reference internal image-reference" href="images/as_0.png"><img alt="images/as_0.png" src="images/as_0.png" style="width: 500px;" /></a>
 <p>And <strong>copy</strong> the <em>loopy</em> folder into your project under the <strong>libraries</strong> folder</p>
 <a class="reference internal image-reference" href="images/as_1.png"><img alt="images/as_1.png" src="images/as_1.png" style="width: 500px;" /></a>
-<p>In your Android Studio project, open the <strong>Project Structure</strong> add the SDK to your project via <strong>Import Module</strong></p>
+<p>In your Android Studio project, open the <strong>Project Structure</strong> add the library to your project via <strong>Import Module</strong></p>
 <div class="cell container">
 <a class="reference internal image-reference" href="images/as_4.png"><img alt="images/as_4.png" src="images/as_4.png" style="width: 300px;" /></a>
 </div>
@@ -77,7 +77,7 @@ expected.</p>
 </div>
 <p>You <em>may</em> also need to add the Loopy project as a dependant module in your app</p>
 <img alt="images/as_6.png" src="images/as_6.png" />
-<p>Next, add the SDK to your <strong>settings.gradle</strong> file in your project (replace HellowWorld with your project name)</p>
+<p>Next, add the library to your <strong>settings.gradle</strong> file in your project (replace HellowWorld with your project name)</p>
 <div class="highlight-javascript"><div class="highlight"><pre><span class="nx">include</span> <span class="s1">&#39;:libraries:loopy&#39;</span><span class="p">,</span> <span class="s1">&#39;:HelloWorld&#39;</span>
 </pre></div>
 </div>
@@ -89,12 +89,12 @@ expected.</p>
 </div>
 </div>
 <h4><a href="javascript:void(toggleDiv('maven'));">Using Maven &#10140;</a></h4><div class="hidden container" id="maven">
-<p>Within the SDK distribution you will find an <strong>apklib</strong> version of the SDK that you can install into a local repository</p>
+<p>Within the library distribution you will find an <strong>apklib</strong> version of the library that you can install into a local repository</p>
 <div class="highlight-java"><pre>mvn install:install-file \
     -Dfile=${sdk.apklib} \
     -DgroupId=${loopy.artifact.group} \
     -DartifactId=${loopy.artifact.name} \
-    -Dversion=1_0_rc3 \
+    -Dversion=1_0_rc4 \
     -Dpackaging=apklib
 </pre>
 </div>
@@ -102,7 +102,7 @@ expected.</p>
 <div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;dependency&gt;</span>
    <span class="nt">&lt;groupId&gt;</span>${loopy.artifact.group}<span class="nt">&lt;/groupId&gt;</span>
    <span class="nt">&lt;artifactId&gt;</span>${loopy.artifact.name}<span class="nt">&lt;/artifactId&gt;</span>
-   <span class="nt">&lt;version&gt;</span>1_0_rc3<span class="nt">&lt;/version&gt;</span>
+   <span class="nt">&lt;version&gt;</span>1_0_rc4<span class="nt">&lt;/version&gt;</span>
    <span class="nt">&lt;type&gt;</span>apklib<span class="nt">&lt;/type&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
@@ -150,9 +150,30 @@ to learn how to include an Android Library project in your app.</p>
 <p><strong>&lt;/application&gt;</strong></p>
 </div></blockquote>
 <p><strong>&lt;/manifest&gt;</strong></p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>If your application already defines a broadcast receiver you can simply call Loopy to track the install</p>
+<a href="javascript:void(toggleDiv('broadcast'));">Show me how...</a><div class="hidden last container" id="broadcast">
+<blockquote>
+<div><div class="highlight-java"><div class="highlight"><pre><span class="kd">public</span> <span class="kd">class</span> <span class="nc">MyBroadcastReceiver</span> <span class="kd">extends</span> <span class="n">BroadcastReceiver</span> <span class="o">{</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onReceive</span><span class="o">(</span><span class="n">Context</span> <span class="n">context</span><span class="o">,</span> <span class="n">Intent</span> <span class="n">intent</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="c1">// Just call loopy to track the install</span>
+        <span class="n">Loopy</span><span class="o">.</span><span class="na">onInstall</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">intent</span><span class="o">);</span>
+
+        <span class="c1">// Your existing code goes here</span>
+
+    <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
 </div>
-<div class="section" id="implement-the-sdk-lifecycle-in-your-activity">
-<h2>3. Implement the SDK lifecycle in your activity<a class="headerlink" href="#implement-the-sdk-lifecycle-in-your-activity" title="Permalink to this headline">¶</a></h2>
+</div></blockquote>
+</div>
+</div>
+</div>
+<div class="section" id="implement-the-loopy-lifecycle-in-your-activity">
+<h2>3. Implement the Loopy lifecycle in your activity<a class="headerlink" href="#implement-the-loopy-lifecycle-in-your-activity" title="Permalink to this headline">¶</a></h2>
 <div class="highlight-java"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">android.app.Activity</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">android.os.Bundle</span><span class="o">;</span>
 <span class="kn">import</span> <span class="nn">com.sharethis.loopy.sdk.Loopy</span><span class="o">;</span>
@@ -201,7 +222,7 @@ to learn how to include an Android Library project in your app.</p>
 <div class="subtitle container">
 Share Dialog</div>
 <p>Quick and simple.  Great for novices or first-time app developers.</p>
-<p><a class="reference internal" href="share_dialog.html?v=1_0_rc3"><em>Show me how...</em></a></p>
+<p><a class="reference internal" href="share_dialog.html?v=1_0_rc4"><em>Show me how...</em></a></p>
 </div>
 </div>
 <div class="block container">
@@ -210,7 +231,7 @@ Share Dialog</div>
 <div class="subtitle container">
 Share Menu</div>
 <p>Follow the official Android Style Guidelines and implement an Action Bar with a Share Menu</p>
-<p><a class="reference internal" href="share_menu.html?v=1_0_rc3"><em>Show me how...</em></a></p>
+<p><a class="reference internal" href="share_menu.html?v=1_0_rc4"><em>Show me how...</em></a></p>
 </div>
 </div>
 </div>
@@ -223,15 +244,15 @@ Share Menu</div>
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-<h3><a href="index.html?v=1_0_rc3">Table Of Contents</a></h3>
+<h3><a href="index.html?v=1_0_rc4">Table Of Contents</a></h3>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="">Getting Started</a></li>
-<li class="toctree-l1"><a class="reference internal" href="share_dialog.html?v=1_0_rc3">Using the Share Dialog</a></li>
-<li class="toctree-l1"><a class="reference internal" href="share_menu.html?v=1_0_rc3">Using the Share Menu</a></li>
-<li class="toctree-l1"><a class="reference internal" href="custom_share.html?v=1_0_rc3">Using a Custom Share UI</a></li>
-<li class="toctree-l1"><a class="reference internal" href="non_url.html?v=1_0_rc3">Sharing Non-URL Content</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html?v=1_0_rc3">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="getting_help.html?v=1_0_rc3">Getting Help</a></li>
+<li class="toctree-l1"><a class="reference internal" href="share_dialog.html?v=1_0_rc4">Using the Share Dialog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="share_menu.html?v=1_0_rc4">Using the Share Menu</a></li>
+<li class="toctree-l1"><a class="reference internal" href="custom_share.html?v=1_0_rc4">Using a Custom Share UI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="non_url.html?v=1_0_rc4">Sharing Non-URL Content</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html?v=1_0_rc4">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="getting_help.html?v=1_0_rc4">Getting Help</a></li>
 </ul>
 
         </div>
@@ -242,16 +263,16 @@ Share Menu</div>
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
-          <a href="share_dialog.html?v=1_0_rc3" title="Using the Share Dialog"
+          <a href="share_dialog.html?v=1_0_rc4" title="Using the Share Dialog"
              >next</a></li>
         <li class="right" >
-          <a href="index.html?v=1_0_rc3" title="Loopy Android SDK"
+          <a href="index.html?v=1_0_rc4" title="Loopy Android"
              >previous</a> |</li>
-        <li><a href="index.html?v=1_0_rc3">Loopy Android SDK 1_0_rc3 (b125) documentation</a> &raquo;</li> 
+        <li><a href="index.html?v=1_0_rc4">Loopy Android SDK 1_0_rc4 (b147) documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, ShareThis.
+        &copy; Copyright 2014, ShareThis.
     </div>
   </body>
 </html>
