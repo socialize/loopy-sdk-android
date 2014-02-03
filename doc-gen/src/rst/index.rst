@@ -1,5 +1,5 @@
-Loopy Android SDK
-=================
+Loopy Android
+=============
 
 Contents:
 
