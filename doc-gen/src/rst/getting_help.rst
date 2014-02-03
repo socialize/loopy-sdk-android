@@ -7,7 +7,7 @@ Getting Help
 
 .. container:: block-padded
 
-    If you have any questions, issues, bugs or feature requests for the SDK feel free
+    If you have any questions, issues, bugs or feature requests for Loopy feel free
     to log them into our customer support system at:
 
     |gesat|

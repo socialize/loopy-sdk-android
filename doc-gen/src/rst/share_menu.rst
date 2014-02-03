@@ -26,7 +26,7 @@ Using the Share Menu
 
     If you are using the ShareActionProvider available in |api_14|
     (or via the |support_lib|) you can easily
-    integrate the Loopy |trade| SDK by using the callback provided by the ShareActionProvider.
+    integrate the Loopy |trade| library by using the callback provided by the ShareActionProvider.
 
     For maximum compatiblity the Loopy |trade| assumes you will be using the version of the ShareActionProvider provided
     in the v7 (or greater) |appcompat|

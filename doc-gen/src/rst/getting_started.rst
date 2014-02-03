@@ -3,10 +3,14 @@ Getting Started
 
 .. include:: <isonum.txt>
 
+.. |br| raw:: html
+
+   <br />
+
 Implementing Loopy |trade| with your app is a simple 4 step process:
 
-1. Install the SDK
-------------------
+1. Install the Library
+----------------------
     .. raw:: html
 
         <h4><a href="javascript:void(toggleDiv('gradle'));">Using Android Studio / Gradle &#10140;</a></h4>
@@ -21,7 +25,7 @@ Implementing Loopy |trade| with your app is a simple 4 step process:
 
             As a result some of the steps below may become unnecessary in future versions of Android Studio.
 
-        Locate the *sdk* folder in your Loopy SDK distribution:
+        Locate the *dist* folder in your Loopy distribution:
 
         .. image:: images/as_0.png
             :width: 500
@@ -31,7 +35,7 @@ Implementing Loopy |trade| with your app is a simple 4 step process:
         .. image:: images/as_1.png
             :width: 500
 
-        In your Android Studio project, open the **Project Structure** add the SDK to your project via **Import Module**
+        In your Android Studio project, open the **Project Structure** add the library to your project via **Import Module**
 
         .. container:: cell
 
@@ -47,7 +51,7 @@ Implementing Loopy |trade| with your app is a simple 4 step process:
 
         .. image:: images/as_6.png
 
-        Next, add the SDK to your **settings.gradle** file in your project (replace HellowWorld with your project name)
+        Next, add the library to your **settings.gradle** file in your project (replace HellowWorld with your project name)
 
         .. literalinclude:: ../snippets/snippets.txt
             :start-after: begin-snippet-3
@@ -69,7 +73,7 @@ Implementing Loopy |trade| with your app is a simple 4 step process:
     .. container:: hidden
         :name: maven
 
-        Within the SDK distribution you will find an **apklib** version of the SDK that you can install into a local repository
+        Within the library distribution you will find an **apklib** version of the library that you can install into a local repository
 
         .. literalinclude:: ../snippets/snippets.txt
             :start-after: begin-snippet-0
@@ -111,14 +115,14 @@ Ensure your app supports SDK version 9 and above:
 **<manifest ... >**
 
 .. literalinclude:: ../../AndroidManifest.xml
-	:start-after: begin-snippet-0
-	:end-before: end-snippet-0
+    :start-after: begin-snippet-0
+    :end-before: end-snippet-0
 
 Ensure your app has the **INTERNET** permission.  Geo location permissions are optional but recommended for superior analytics
 
 .. literalinclude:: ../../AndroidManifest.xml
-	:start-after: begin-snippet-1
-	:end-before: end-snippet-1
+    :start-after: begin-snippet-1
+    :end-before: end-snippet-1
 
 To enable **Install Tracking** add the InstallTracker receiver
 
@@ -132,12 +136,28 @@ To enable **Install Tracking** add the InstallTracker receiver
 
 **</manifest>**
 
-3. Implement the SDK lifecycle in your activity
------------------------------------------------
+
+.. note::
+
+    If your application already defines a broadcast receiver you can simply call Loopy to track the install
+
+    .. raw:: html
+
+        <a href="javascript:void(toggleDiv('broadcast'));">Show me how...</a>
+
+    .. container:: hidden
+        :name: broadcast
+
+            .. literalinclude:: ../com/sharethis/loopy/doc/MyBroadcastReceiver.java
+                :start-after: begin-snippet-0
+                :end-before: end-snippet-0
+
+3. Implement the Loopy lifecycle in your activity
+-------------------------------------------------
 
 .. literalinclude:: ../com/sharethis/loopy/doc/MyActivity.java
-	:start-after: begin-snippet-0
-	:end-before: end-snippet-0
+    :start-after: begin-snippet-0
+    :end-before: end-snippet-0
 
 
 4. Implement a Share Dialog or Share Menu
