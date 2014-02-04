@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Getting Started &mdash; Loopy Android 1_0_rc4 (b149) documentation</title>
+    <title>Getting Started &mdash; Loopy Android 1_0_rc4 (b150) documentation</title>
     
     <link rel="stylesheet" href="static/nature.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '1_0_rc4 (b149)',
+        VERSION:     '1_0_rc4 (b150)',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  false
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="static/underscore.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="shortcut icon" href="static/favicon.ico"/>
-    <link rel="top" title="Loopy Android 1_0_rc4 (b149) documentation" href="index.html?v=1_0_rc4" />
+    <link rel="top" title="Loopy Android 1_0_rc4 (b150) documentation" href="index.html?v=1_0_rc4" />
     <link rel="next" title="Using the Share Dialog" href="share_dialog.html?v=1_0_rc4" />
     <link rel="prev" title="Loopy Android" href="index.html?v=1_0_rc4" />
 <script type="text/javascript" src="static/loopy.js"></script>
@@ -41,7 +41,7 @@
         <li class="right" >
           <a href="index.html?v=1_0_rc4" title="Loopy Android"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html?v=1_0_rc4">Loopy Android 1_0_rc4 (b149) documentation</a> &raquo;</li> 
+        <li><a href="index.html?v=1_0_rc4">Loopy Android 1_0_rc4 (b150) documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -92,16 +92,16 @@ expected.</p>
 <p>Within the library distribution you will find an <strong>apklib</strong> version of the library that you can install into a local repository</p>
 <div class="highlight-java"><pre>mvn install:install-file \
     -Dfile=${sdk.apklib} \
-    -DgroupId=${loopy.artifact.group} \
-    -DartifactId=${loopy.artifact.name} \
+    -DgroupId=loopy \
+    -DartifactId=loopy-android \
     -Dversion=1_0_rc4 \
     -Dpackaging=apklib
 </pre>
 </div>
 <p>Then add a dependency to your pom.xml</p>
 <div class="highlight-xml"><div class="highlight"><pre><span class="nt">&lt;dependency&gt;</span>
-   <span class="nt">&lt;groupId&gt;</span>${loopy.artifact.group}<span class="nt">&lt;/groupId&gt;</span>
-   <span class="nt">&lt;artifactId&gt;</span>${loopy.artifact.name}<span class="nt">&lt;/artifactId&gt;</span>
+   <span class="nt">&lt;groupId&gt;</span>loopy<span class="nt">&lt;/groupId&gt;</span>
+   <span class="nt">&lt;artifactId&gt;</span>loopy-android<span class="nt">&lt;/artifactId&gt;</span>
    <span class="nt">&lt;version&gt;</span>1_0_rc4<span class="nt">&lt;/version&gt;</span>
    <span class="nt">&lt;type&gt;</span>apklib<span class="nt">&lt;/type&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span>
@@ -268,7 +268,7 @@ Share Menu</div>
         <li class="right" >
           <a href="index.html?v=1_0_rc4" title="Loopy Android"
              >previous</a> |</li>
-        <li><a href="index.html?v=1_0_rc4">Loopy Android 1_0_rc4 (b149) documentation</a> &raquo;</li> 
+        <li><a href="index.html?v=1_0_rc4">Loopy Android 1_0_rc4 (b150) documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
