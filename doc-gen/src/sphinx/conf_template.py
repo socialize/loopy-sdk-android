@@ -1,7 +1,7 @@
 import sys, os
 source_suffix = '.rst'
 master_doc = 'index'
-project = u'@name@ Android SDK'
+project = u'@name@ Android'
 copyright = u'@year@, @company@'
 version = '@version@ (b@build@)'
 release = '@version@ (b@build@)'
