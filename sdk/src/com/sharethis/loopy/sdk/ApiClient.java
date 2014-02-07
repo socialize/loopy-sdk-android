@@ -66,7 +66,7 @@ public class ApiClient {
         try {
             JSONObject payload = getInstallOpenPayload(stdid, referrer, true);
             callAsync(getAuthHeader(apiKey, apiSecret), payload, INSTALL, true, callback);
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
                 callback.onError(e);
@@ -108,7 +108,7 @@ public class ApiClient {
                 }
                 Logger.e(error);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
                 callback.onError(e);
@@ -174,7 +174,7 @@ public class ApiClient {
                 }
                 Logger.e(error);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
                 callback.onError(e);
@@ -279,7 +279,7 @@ public class ApiClient {
                 }
                 Logger.e(error);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
                 callback.onError(e);
@@ -358,7 +358,7 @@ public class ApiClient {
                 }
                 Logger.e(error);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
                 callback.onError(e);
@@ -407,7 +407,7 @@ public class ApiClient {
                 }
                 Logger.e(error);
             }
-        } catch (JSONException e) {
+        } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
                 callback.onError(e);
@@ -444,44 +444,50 @@ public class ApiClient {
 
             @Override
             protected void onPostExecute(JSONObject result) {
-                if (cb != null) {
-                    if (error != null) {
-                        if (error instanceof SocketTimeoutException) {
-                            cb.onError(LoopyException.wrap(error, LoopyException.CLIENT_TIMEOUT));
-                        } else {
-                            // Hack for Android <= 2.3
-                            if(error instanceof IOException && error.getMessage().equals("Request aborted")) {
+
+                try {
+                    if (cb != null) {
+                        if (error != null) {
+                            if (error instanceof SocketTimeoutException) {
                                 cb.onError(LoopyException.wrap(error, LoopyException.CLIENT_TIMEOUT));
                             } else {
-                                cb.onError(error);
-                            }
-                        }
-                    } else {
-                        // Check for api error
-                        if (!JSONUtils.isNull(result, "error")) {
-                            try {
-                                JSONObject error = result.getJSONObject("error");
-                                StringBuilder builder = new StringBuilder();
-
-                                if (!JSONUtils.isNull(error, "message")) {
-                                    JSONArray messages = error.getJSONArray("message");
-                                    for (int i = 0; i < messages.length(); i++) {
-                                        if (i > 0) {
-                                            builder.append(",");
-                                        }
-                                        builder.append(messages.getString(i));
-                                    }
+                                // Hack for Android <= 2.3
+                                if(error instanceof IOException && error.getMessage().equals("Request aborted")) {
+                                    cb.onError(LoopyException.wrap(error, LoopyException.CLIENT_TIMEOUT));
+                                } else {
+                                    cb.onError(error);
                                 }
-
-                                cb.onError(new LoopyException(builder.toString(), error.getInt("code")));
-                            } catch (JSONException e) {
-                                Logger.e(e);
-                                cb.onError(new LoopyException("An error was returned but the error data could not be parsed", e, LoopyException.PARSE_ERROR));
                             }
                         } else {
-                            cb.onSuccess(result);
+                            // Check for api error
+                            if (!JSONUtils.isNull(result, "error")) {
+                                try {
+                                    JSONObject error = result.getJSONObject("error");
+                                    StringBuilder builder = new StringBuilder();
+
+                                    if (!JSONUtils.isNull(error, "message")) {
+                                        JSONArray messages = error.getJSONArray("message");
+                                        for (int i = 0; i < messages.length(); i++) {
+                                            if (i > 0) {
+                                                builder.append(",");
+                                            }
+                                            builder.append(messages.getString(i));
+                                        }
+                                    }
+
+                                    cb.onError(new LoopyException(builder.toString(), error.getInt("code")));
+                                } catch (Exception e) {
+                                    Logger.e(e);
+                                    cb.onError(new LoopyException("An error was returned but the error data could not be parsed", e, LoopyException.PARSE_ERROR));
+                                }
+                            } else {
+                                cb.onSuccess(result);
+                            }
                         }
                     }
+                } catch (Throwable e) {
+                    // We NEVER want to bubble any exception up to the calling/ui thread.
+                    Logger.e(e);
                 }
             }
         }.execute();
