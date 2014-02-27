@@ -27,6 +27,7 @@ public class ApiClient {
 
     public static final String SHORTLINK = "shortlink";
     public static final String SHARE = "share";
+    public static final String SHARELINK = "sharelink";
     public static final String INSTALL = "install";
     public static final String REFERRER = "referrer";
     public static final String OPEN = "open";
@@ -57,6 +58,7 @@ public class ApiClient {
      * @param referrer The referrer that lead to the installation of the app.
      * @param callback A callback to handle the result.
      */
+    @SuppressWarnings("unused")
     public void install(String apiKey, String apiSecret, String stdid, String referrer, ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
@@ -89,6 +91,7 @@ public class ApiClient {
      * @param referrer The referrer that lead to the open of the app.
      * @param callback A callback to handle the result.
      */
+    @SuppressWarnings("unused")
     public void open(String apiKey, String apiSecret, String referrer, ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
@@ -96,18 +99,8 @@ public class ApiClient {
         }
 
         try {
-            LoopyState state = getState();
-
-            if (state.hasSTDID()) {
-                JSONObject payload = getInstallOpenPayload(state.getSTDID(), referrer, false);
-                callAsync(getAuthHeader(apiKey, apiSecret), payload, OPEN, false, callback);
-            } else {
-                LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling open", LoopyException.PARAMETER_MISSING);
-                if (callback != null) {
-                    callback.onError(error);
-                }
-                Logger.e(error);
-            }
+            JSONObject payload = getInstallOpenPayload(null, referrer, false);
+            doAsyncCall(apiKey, apiSecret, payload, OPEN, false, callback, null);
         } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
@@ -125,20 +118,6 @@ public class ApiClient {
         call(getAuthHeader(apiKey, apiSecret), payload, OPEN, true);
     }
 
-
-    JSONObject getInstallOpenPayload(String stdid, String referrer, boolean deviceId) throws JSONException {
-        JSONObject payload = newJSONObject();
-        payload.put("stdid", stdid);
-        payload.put("timestamp", getCurrentTimestamp());
-        payload.put("referrer", referrer);
-        addDevice(payload, deviceId);
-        addApp(payload);
-        addClient(payload);
-        return payload;
-    }
-
-
-
     /**
      * Correlates to the /referrer endpoint of the Loopy API
      *
@@ -154,26 +133,13 @@ public class ApiClient {
         try {
             JSONObject payload = newJSONObject();
 
-            LoopyState state = getState();
+            payload.put("referrer", referrer);
 
-            if (state.hasSTDID()) {
+            addDevice(payload);
+            addApp(payload);
+            addClient(payload);
 
-                payload.put("stdid", state.getSTDID());
-                payload.put("timestamp", getCurrentTimestamp());
-                payload.put("referrer", referrer);
-
-                addDevice(payload);
-                addApp(payload);
-                addClient(payload);
-
-                callAsync(getAuthHeader(apiKey, apiSecret), payload, REFERRER, false, callback);
-            } else {
-                LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling referrer", LoopyException.PARAMETER_MISSING);
-                if (callback != null) {
-                    callback.onError(error);
-                }
-                Logger.e(error);
-            }
+            doAsyncCall(apiKey, apiSecret, payload, REFERRER, false, callback, null);
         } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
@@ -195,6 +161,7 @@ public class ApiClient {
         }
 
         try {
+
             if (useShortlinkCache) {
                 String shortlink = shortlinkCache.getShortlink(item);
                 if (shortlink != null && callback != null) {
@@ -206,79 +173,74 @@ public class ApiClient {
             }
 
             JSONObject payload = newJSONObject();
+            Device device = getDevice();
 
-            LoopyState state = getState();
-
-            if (state.hasSTDID()) {
-
-                Device device = getDevice();
-
-                if (device != null) {
-                    payload.put("md5id", device.getMd5Id());
-                }
-
-                payload.put("stdid", state.getSTDID());
-                payload.put("timestamp", getCurrentTimestamp());
-
-                JSONObject itemJSON = new JSONObject();
-
-                JSONUtils.put(itemJSON, "type", item.getType());
-                JSONUtils.put(itemJSON, "url", item.getUrl());
-                JSONUtils.put(itemJSON, "title", item.getTitle());
-                JSONUtils.put(itemJSON, "image", item.getImageUrl());
-                JSONUtils.put(itemJSON, "description", item.getDescription());
-                JSONUtils.put(itemJSON, "video", item.getVideoUrl());
-
-                payload.put("item", itemJSON);
-
-                if (item.tags != null && item.tags.size() > 0) {
-                    JSONUtils.put(payload, "tags", item.tags);
-                }
-
-                callAsync(getAuthHeader(apiKey, apiSecret), payload, SHORTLINK, false, new ApiCallback() {
-                    @Override
-                    public void onSuccess(JSONObject result) {
-
-                        if (useShortlinkCache) {
-                            String shortlink = JSONUtils.getString(result, "shortlink");
-                            if (shortlink != null) {
-                                shortlinkCache.add(shortlink, item);
-                            }
-                        }
-
-                        if (callback != null) {
-                            callback.onSuccess(result);
-                        }
-                    }
-
-                    @Override
-                    public void onBeforePost(Map<String, String> headers, JSONObject payload) {
-                        if (callback != null) {
-                            callback.onBeforePost(headers, payload);
-                        }
-                    }
-
-                    @Override
-                    public void onProcess(JSONObject result) {
-                        if (callback != null) {
-                            callback.onProcess(result);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (callback != null) {
-                            callback.onError(e);
-                        }
-                    }
-                });
-            } else {
-                LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling shortlink", LoopyException.PARAMETER_MISSING);
-                if (callback != null) {
-                    callback.onError(error);
-                }
-                Logger.e(error);
+            if (device != null) {
+                payload.put("md5id", device.getMd5Id());
             }
+
+            payload.put("item", getItemPayload(item));
+
+            if (item.tags != null && item.tags.size() > 0) {
+                JSONUtils.put(payload, "tags", item.tags);
+            }
+
+            addDevice(payload);
+            addApp(payload);
+            addClient(payload);
+
+            doAsyncCall(apiKey, apiSecret, payload, SHORTLINK, false, callback, new ApiClientCallback() {
+                @Override
+                public void onSuccess(JSONObject result) {
+                    if (useShortlinkCache) {
+                        String shortlink = JSONUtils.getString(result, "shortlink");
+                        if (shortlink != null) {
+                            shortlinkCache.add(shortlink, item);
+                        }
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Logger.e(e);
+            if (callback != null) {
+                callback.onError(e);
+            }
+        }
+    }
+
+    /**
+     * Correlates to the /sharelink endpoint of the Loopy API.  This creates a shortlink and generates a share event
+     * in a single call.
+     * @param item      The item being shared.
+     * @param channel   The channel through which the share is occurring (e.g. facebook, email etc)
+     * @param callback  A callback to handle the response.
+     */
+    @SuppressWarnings("unused")
+    public void shareLink(String apiKey, String apiSecret, final Item item, String channel, final ApiCallback callback) {
+        if (Logger.isDebugEnabled()) {
+            Logger.d("shareLink called for " + item + " via channel " + channel);
+        }
+
+        try {
+            JSONObject payload = newJSONObject();
+            payload.put("item", getItemPayload(item));
+            payload.put("channel", channel);
+
+            addDevice(payload);
+            addApp(payload);
+            addClient(payload);
+
+            doAsyncCall(apiKey, apiSecret, payload, SHARELINK, false, callback, new ApiClientCallback() {
+                @Override
+                public void onSuccess(JSONObject result) {
+                    if (useShortlinkCache) {
+                        String shortlink = JSONUtils.getString(result, "shortlink");
+                        if (shortlink != null) {
+                            shortlinkCache.remove(shortlink);
+                        }
+                    }
+                }
+            });
         } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
@@ -302,62 +264,21 @@ public class ApiClient {
 
         try {
             JSONObject payload = newJSONObject();
+            payload.put("shortlink", shortlink);
+            payload.put("channel", channel);
 
-            LoopyState state = getState();
+            addDevice(payload);
+            addApp(payload);
+            addClient(payload);
 
-            if (state.hasSTDID()) {
-
-                payload.put("stdid", state.getSTDID());
-                payload.put("timestamp", getCurrentTimestamp());
-                payload.put("shortlink", shortlink);
-
-                JSONUtils.put(payload, "channel", channel);
-
-                addDevice(payload);
-                addApp(payload);
-                addClient(payload);
-
-                callAsync(getAuthHeader(apiKey, apiSecret), payload, SHARE, false, new ApiCallback() {
-                    @Override
-                    public void onSuccess(JSONObject result) {
-
-                        if (useShortlinkCache) {
-                            shortlinkCache.remove(shortlink);
-                        }
-
-                        if (callback != null) {
-                            callback.onSuccess(result);
-                        }
+            doAsyncCall(apiKey, apiSecret, payload, SHARE, false, callback, new ApiClientCallback() {
+                @Override
+                public void onSuccess(JSONObject result) {
+                    if (useShortlinkCache) {
+                        shortlinkCache.remove(shortlink);
                     }
-
-                    @Override
-                    public void onBeforePost(Map<String, String> headers, JSONObject payload) {
-                        if (callback != null) {
-                            callback.onBeforePost(headers, payload);
-                        }
-                    }
-
-                    @Override
-                    public void onProcess(JSONObject result) {
-                        if (callback != null) {
-                            callback.onProcess(result);
-                        }
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        if (callback != null) {
-                            callback.onError(e);
-                        }
-                    }
-                });
-            } else {
-                LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling share", LoopyException.PARAMETER_MISSING);
-                if (callback != null) {
-                    callback.onError(error);
                 }
-                Logger.e(error);
-            }
+            });
         } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
@@ -372,6 +293,7 @@ public class ApiClient {
      * @param event    The event being logged.
      * @param callback A callback to handle the result.
      */
+    @SuppressWarnings("unused")
     public void log(String apiKey, String apiSecret, Event event, ApiCallback callback) {
 
         if (Logger.isDebugEnabled()) {
@@ -379,34 +301,18 @@ public class ApiClient {
         }
 
         try {
+            JSONObject eventJSON = new JSONObject();
+            JSONUtils.put(eventJSON, "type", event.getType());
+            JSONUtils.put(eventJSON, "meta", event.getMeta());
             JSONObject payload = newJSONObject();
 
-            LoopyState state = getState();
+            payload.put("event", eventJSON);
 
-            if (state.hasSTDID()) {
+            addDevice(payload);
+            addApp(payload);
+            addClient(payload);
 
-                payload.put("stdid", state.getSTDID());
-                payload.put("timestamp", getCurrentTimestamp());
-
-                JSONObject eventJSON = new JSONObject();
-
-                JSONUtils.put(eventJSON, "type", event.getType());
-                JSONUtils.put(eventJSON, "meta", event.getMeta());
-
-                payload.put("event", eventJSON);
-
-                addDevice(payload);
-                addApp(payload);
-                addClient(payload);
-
-                callAsync(getAuthHeader(apiKey, apiSecret), payload, LOG, false, callback);
-            } else {
-                LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling log", LoopyException.PARAMETER_MISSING);
-                if (callback != null) {
-                    callback.onError(error);
-                }
-                Logger.e(error);
-            }
+            doAsyncCall(apiKey, apiSecret, payload, LOG, false, callback, null);
         } catch (Exception e) {
             Logger.e(e);
             if (callback != null) {
@@ -493,7 +399,6 @@ public class ApiClient {
         }.execute();
     }
 
-
     protected JSONObject call(Map<String, String> headers, JSONObject payload, String endpoint, boolean secure) throws Exception {
 
         HttpEntity entity = null;
@@ -558,6 +463,84 @@ public class ApiClient {
                 entity.consumeContent();
             }
         }
+    }
+
+    void doAsyncCall(String apiKey, String apiSecret, JSONObject payload, final String endpoint, boolean secure, final ApiCallback callback, final ApiClientCallback apiCallback) {
+
+        try {
+
+            LoopyState state = getState();
+
+            if (state.hasSTDID()) {
+
+                payload.put("stdid", state.getSTDID());
+                payload.put("timestamp", getCurrentTimestamp());
+
+                callAsync(getAuthHeader(apiKey, apiSecret), payload, endpoint, secure, new ApiCallback() {
+                    @Override
+                    public void onSuccess(JSONObject result) {
+
+                        if (apiCallback != null) {
+                            apiCallback.onSuccess(result);
+                        }
+
+                        if (callback != null) {
+                            callback.onSuccess(result);
+                        }
+                    }
+
+                    @Override
+                    public void onBeforePost(Map<String, String> headers, JSONObject payload) {
+                        if (callback != null) {
+                            callback.onBeforePost(headers, payload);
+                        }
+                    }
+
+                    @Override
+                    public void onProcess(JSONObject result) {
+                        if (callback != null) {
+                            callback.onProcess(result);
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        if (callback != null) {
+                            callback.onError(e);
+                        }
+                    }
+                });
+            } else {
+                LoopyException error = new LoopyException("Internal STDID not found.  Make sure you call \"install\" before calling share", LoopyException.PARAMETER_MISSING);
+                if (callback != null) {
+                    callback.onError(error);
+                }
+                Logger.e(error);
+            }
+        } catch (Exception e) {
+            Logger.e(e);
+            if (callback != null) {
+                callback.onError(e);
+            }
+        }
+    }
+
+    protected void addApp(JSONObject payload) throws JSONException {
+        App app = getApp();
+        if (app != null) {
+            JSONObject a = new JSONObject();
+            JSONUtils.put(a, "id", app.getId());
+            JSONUtils.put(a, "name", app.getName());
+            JSONUtils.put(a, "version", app.getVersion());
+            payload.put("app", a);
+        }
+    }
+
+    protected void addClient(JSONObject payload) throws JSONException {
+        JSONObject c = new JSONObject();
+        JSONUtils.put(c, "lang", "java");
+        JSONUtils.put(c, "version", Loopy.VERSION);
+        payload.put("client", c);
     }
 
     // Mockable
@@ -625,31 +608,33 @@ public class ApiClient {
         }
     }
 
-    protected void addApp(JSONObject payload) throws JSONException {
-        App app = getApp();
-        if (app != null) {
-            JSONObject a = new JSONObject();
-            JSONUtils.put(a, "id", app.getId());
-            JSONUtils.put(a, "name", app.getName());
-            JSONUtils.put(a, "version", app.getVersion());
-            payload.put("app", a);
+    JSONObject getInstallOpenPayload(String stdid, String referrer, boolean deviceId) throws JSONException {
+        JSONObject payload = newJSONObject();
+        if(stdid != null) {
+            payload.put("stdid", stdid);
         }
+        payload.put("timestamp", getCurrentTimestamp());
+        payload.put("referrer", referrer);
+        addDevice(payload, deviceId);
+        addApp(payload);
+        addClient(payload);
+        return payload;
     }
 
-    protected void addClient(JSONObject payload) throws JSONException {
-        JSONObject c = new JSONObject();
-        JSONUtils.put(c, "lang", "java");
-        JSONUtils.put(c, "version", Loopy.VERSION);
-        payload.put("client", c);
+    JSONObject getItemPayload(Item item) throws JSONException {
+        JSONObject itemJSON = new JSONObject();
+        JSONUtils.put(itemJSON, "type", item.getType());
+        JSONUtils.put(itemJSON, "url", item.getUrl());
+        JSONUtils.put(itemJSON, "title", item.getTitle());
+        JSONUtils.put(itemJSON, "image", item.getImageUrl());
+        JSONUtils.put(itemJSON, "description", item.getDescription());
+        JSONUtils.put(itemJSON, "video", item.getVideoUrl());
+        return itemJSON;
     }
 
     // Mockable
     JSONObject newJSONObject() {
         return new JSONObject();
-    }
-
-    final void setHttpClientFactory(HttpClientFactory httpClientFactory) {
-        this.httpClientFactory = httpClientFactory;
     }
 
     Map<String, String> getAuthHeader(String apiKey, String apiSecret) {
@@ -659,6 +644,12 @@ public class ApiClient {
         return headers;
     }
 
+    @SuppressWarnings("unused")
+    final void setHttpClientFactory(HttpClientFactory httpClientFactory) {
+        this.httpClientFactory = httpClientFactory;
+    }
+
+    @SuppressWarnings("unused")
     public void setUseShortlinkCache(boolean useShortlinkCache) {
         this.useShortlinkCache = useShortlinkCache;
     }

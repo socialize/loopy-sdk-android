@@ -22,7 +22,7 @@ public abstract class ApiCallback {
      * This method executes on the main UI thread.
      * @param e The exception thrown within the async task.
      */
-	public abstract void onError(Throwable e);
+	public void onError(Throwable e) {}
 
     /**
      * Called within the async task.  Implement this if you want additional work in the async task thread.
