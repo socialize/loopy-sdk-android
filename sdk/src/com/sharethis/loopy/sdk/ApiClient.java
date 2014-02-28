@@ -185,10 +185,6 @@ public class ApiClient {
                 JSONUtils.put(payload, "tags", item.tags);
             }
 
-            addDevice(payload);
-            addApp(payload);
-            addClient(payload);
-
             doAsyncCall(apiKey, apiSecret, payload, SHORTLINK, false, callback, new ApiClientCallback() {
                 @Override
                 public void onSuccess(JSONObject result) {
@@ -302,8 +298,12 @@ public class ApiClient {
 
         try {
             JSONObject eventJSON = new JSONObject();
-            JSONUtils.put(eventJSON, "type", event.getType());
-            JSONUtils.put(eventJSON, "meta", event.getMeta());
+
+            if(event != null) {
+                JSONUtils.put(eventJSON, "type", event.getType());
+                JSONUtils.put(eventJSON, "meta", event.getMeta());
+            }
+
             JSONObject payload = newJSONObject();
 
             payload.put("event", eventJSON);

@@ -18,8 +18,8 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Python 2.7.2 (/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python) interpreter library" level="application" />
     <orderEntry type="module" module-name="loopy-sdk" />
+    <orderEntry type="library" name="Python 2.7.2 (/System/Library/Frameworks/Python.framework/Versions/2.7/bin/python) interpreter library" level="application" />
   </component>
 </module>
 
