@@ -451,7 +451,7 @@ public class ApiClient {
                 }
 
                 if (statusCode != 200) {
-                    throw new LoopyException(response.getStatusLine().getReasonPhrase(), statusCode);
+                    throw new LoopyException(response.getStatusLine().getReasonPhrase() + ":\n" + sResponseText, statusCode);
                 } else {
                     return new JSONObject(sResponseText);
                 }

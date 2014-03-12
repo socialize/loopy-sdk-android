@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.os.AsyncTask;
@@ -22,7 +23,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -64,6 +64,11 @@ public class Loopy {
      * @param context The current context.
      */
     public static void onCreate(Context context, String apiKey, String apiSecret) {
+
+        if(Logger.isDebugEnabled()) {
+            Logger.d("onCreate called for " + apiKey);
+        }
+
         AppDataCache.getInstance().onCreate(context);
         instance.create(context, apiKey, apiSecret);
     }
@@ -74,8 +79,12 @@ public class Loopy {
      * @param context The current context.
      */
     public static void onDestroy(Context context) {
+        if(Logger.isDebugEnabled()) {
+            Logger.d("onDestroy called");
+        }
+
         AppDataCache.getInstance().onDestroy(context);
-        instance.destroy(context);
+        instance.destroy();
     }
 
     /**
@@ -84,6 +93,9 @@ public class Loopy {
      * @param context The current context.
      */
     public static void onStart(Context context) {
+        if(Logger.isDebugEnabled()) {
+            Logger.d("onStart called");
+        }
         instance.start(context);
     }
 
@@ -93,6 +105,9 @@ public class Loopy {
      * @param callback A callback that will be notified when the start process has completed.
      */
     public static void onStart(Context context, StartCallback callback) {
+        if(Logger.isDebugEnabled()) {
+            Logger.d("onStart called");
+        }
         instance.start(context, callback);
     }
 
@@ -102,6 +117,9 @@ public class Loopy {
      * @param context The current context.
      */
     public static void onStop(Context context) {
+        if(Logger.isDebugEnabled()) {
+            Logger.d("onStop called");
+        }
         instance.stop(context);
     }
 
@@ -189,10 +207,21 @@ public class Loopy {
      * @param url      The URL to shorten.
      * @param callback A callback to handle the result.
      */
+    @SuppressWarnings("unused")
     public static void shorten(String url, final ShareCallback callback) {
         final Item item = new Item();
         item.setUrl(url);
         shorten(item, callback);
+    }
+
+    /**
+     * Reports a share AND generates a shortlink
+     * @param item The item to be shared.
+     * @param channel The channel through which the share occurred.
+     * @param callback A callback to handle the result.
+     */
+    public static void shareAndLink(Item item, String channel, final ShareCallback callback) {
+        instance.sharelink(item, channel, callback);
     }
 
     /**
@@ -212,10 +241,12 @@ public class Loopy {
         instance.shareFromIntent(context, item, intent);
     }
 
+    @SuppressWarnings("unused")
     public static void reportShare(Item item, String channel) {
         instance.share(item, channel, null);
     }
 
+    @SuppressWarnings("unused")
     public static void reportShare(Item item, String channel, ApiCallback callback) {
         instance.share(item, channel, callback);
     }
@@ -226,9 +257,20 @@ public class Loopy {
      * @param apiKey    Your api key.
      * @param apiSecret Your api secret.
      */
+    @SuppressWarnings("unused")
     public static void setApiKey(String apiKey, String apiSecret) {
         instance.config.setApiKey(apiKey);
         instance.config.setApiSecret(apiSecret);
+    }
+
+    void sharelink(Item item, String channel, ApiCallback callback) {
+        getApiClient().shareLink(
+                config.getApiKey(),
+                config.getApiSecret(),
+                item,
+                channel,
+                callback
+        );
     }
 
     // Mockable
@@ -257,7 +299,15 @@ public class Loopy {
         if (app == null) {
             PackageManager pm = context.getPackageManager();
             try {
-                app = pm.getActivityInfo(intent.getComponent(), 0).loadLabel(pm).toString();
+                if(pm != null) {
+                    ActivityInfo activityInfo = pm.getActivityInfo(intent.getComponent(), 0);
+                    if(activityInfo != null) {
+                        CharSequence label = activityInfo.loadLabel(pm);
+                        if(label != null) {
+                            app = label.toString();
+                        }
+                    }
+                }
             } catch (Exception e) {
                 Logger.e(e);
             }
@@ -300,7 +350,10 @@ public class Loopy {
                 adapter.setConfig(config);
 
                 view = (ListView) inflater.inflate(R.layout.st_share_dialog_list, null);
-                view.setAdapter(adapter);
+
+                if(view != null) {
+                    view.setAdapter(adapter);
+                }
 
                 return null;
             }
@@ -350,8 +403,8 @@ public class Loopy {
         return appdata;
     }
 
+    @SuppressWarnings("unused")
     public static final class Channel {
-
         public static final String FACEBOOK = "facebook";
         public static final String TWITTER = "twitter";
         public static final String GOOGLEPLUS = "googleplus";
@@ -400,6 +453,7 @@ public class Loopy {
         return apiClient;
     }
 
+    @SuppressWarnings("unused")
     protected void setApiClient(ApiClient apiClient) {
         this.apiClient = apiClient;
     }
@@ -547,7 +601,7 @@ public class Loopy {
         getSession().stop(context);
     }
 
-    protected void destroy(Context context) {
+    protected void destroy() {
         instances--;
         if (instances <= 0) {
             instances = 0;
@@ -557,47 +611,52 @@ public class Loopy {
     protected void trackInstall(final Context context, Intent intent) {
 
         Bundle extras = intent.getExtras();
-        final String referrerString = extras.getString("referrer");
 
-        if (Logger.isDebugEnabled()) {
-            Logger.d("Received install referrer [" +
-                    referrerString +
-                    "]");
-        }
+        if(extras != null) {
+            final String referrerString = extras.getString("referrer");
 
-        apiClient.referrer(
-                config.getApiKey(),
-                config.getApiSecret(), referrerString, new ApiCallback() {
-            @Override
-            public void onSuccess(JSONObject result) {
-                // Just log
+            if(!StringUtils.isEmpty(referrerString)) {
                 if (Logger.isDebugEnabled()) {
-                    Logger.d("Install referrer recorded");
+                    Logger.d("Received install referrer [" +
+                            referrerString +
+                            "]");
                 }
+
+                apiClient.referrer(
+                        config.getApiKey(),
+                        config.getApiSecret(), referrerString, new ApiCallback() {
+                    @Override
+                    public void onSuccess(JSONObject result) {
+                        // Just log
+                        if (Logger.isDebugEnabled()) {
+                            Logger.d("Install referrer recorded");
+                        }
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        // We couldn't save the referrer, queue for later
+                        Logger.e(e);
+
+                        if (getSession().isStarted()) {
+                            Session session = getSession().waitForStart();
+
+                            // TODO: Queue referrer for sending later
+                            session.getState().setReferrer(referrerString);
+                            session.getState().save(context, null);
+                        }
+                    }
+                });
             }
-
-            @Override
-            public void onError(Throwable e) {
-                // We couldn't save the referrer, queue for later
-                Logger.e(e);
-
-                if (getSession().isStarted()) {
-                    Session session = getSession().waitForStart();
-
-                    // TODO: Queue referrer for sending later
-                    session.getState().setReferrer(referrerString);
-                    session.getState().save(context, null);
-                }
-            }
-        });
-    }
-
-    protected boolean waitForStart(long timeout) {
-        if (startLatch != null) {
-            try {
-                return startLatch.await(timeout, TimeUnit.MILLISECONDS);
-            } catch (InterruptedException ignore) {}
         }
-        return false;
     }
+
+//    protected boolean waitForStart(long timeout) {
+//        if (startLatch != null) {
+//            try {
+//                return startLatch.await(timeout, TimeUnit.MILLISECONDS);
+//            } catch (InterruptedException ignore) {}
+//        }
+//        return false;
+//    }
 }
