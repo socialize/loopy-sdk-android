@@ -136,8 +136,8 @@ public class MockLoopy extends Loopy {
     }
 
     @Override
-    public void destroy(Context context) {
-        super.destroy(context);
+    public void destroy() {
+        super.destroy();
     }
 
     @Override

@@ -10,7 +10,7 @@ import android.content.pm.ResolveInfo;
  */
 public abstract class ShareDialogListener implements DialogInterface.OnCancelListener, DialogInterface.OnShowListener {
 
-    public abstract void onLinkGenerated(Item item, Throwable error);
+    public abstract void onLinkGenerated(Item item, Intent shareIntent, Throwable error);
 
     public void onShow(DialogInterface dialog) {}
 

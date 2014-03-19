@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -174,7 +175,7 @@ public class Loopy {
             @Override
             public void onResult(Item item, Throwable error) {
                 if (listener != null) {
-                    listener.onLinkGenerated(item, error);
+                    listener.onLinkGenerated(item, shareIntent, error);
                 }
 
                 if (error == null || !StringUtils.isEmpty(item.getUrl())) {
@@ -185,8 +186,10 @@ public class Loopy {
     }
 
     /**
-     * Displays the default share dialog and presents the apps that are able to consume the content type of the share intent provided.
-     *
+     * Displays the default share dialog and presents the apps that are able to consume the content type
+     * of the share intent provided.
+     * <br/>
+     * NOTE: This method assumes the shortlink property of the share Item has been set.
      * @param context     The current context.
      * @param title       The title of the dialog.
      * @param item        The Item to be shared.
@@ -221,6 +224,9 @@ public class Loopy {
      * @param callback A callback to handle the result.
      */
     public static void shareAndLink(Item item, String channel, final ShareCallback callback) {
+        if (callback != null) {
+            callback.setItem(item);
+        }
         instance.sharelink(item, channel, callback);
     }
 
@@ -651,12 +657,12 @@ public class Loopy {
         }
     }
 
-//    protected boolean waitForStart(long timeout) {
-//        if (startLatch != null) {
-//            try {
-//                return startLatch.await(timeout, TimeUnit.MILLISECONDS);
-//            } catch (InterruptedException ignore) {}
-//        }
-//        return false;
-//    }
+    protected boolean waitForStart(long timeout) {
+        if (startLatch != null) {
+            try {
+                return startLatch.await(timeout, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException ignore) {}
+        }
+        return false;
+    }
 }

@@ -81,13 +81,13 @@ public class DemoActivity extends Activity {
         Loopy.showShareDialog(this, "Share to...", urlToShare, dialogIntent, new ShareDialogListener() {
 
             @Override
-            public void onLinkGenerated(Item item, Throwable error) {
+            public void onLinkGenerated(Item item, Intent shareIntent, Throwable error) {
                 if (error == null) {
                     // We got a tracking shortlink ok, set it in the body of the share (or wherever you like)
-                    dialogIntent.putExtra(Intent.EXTRA_TEXT, item.getShortlink());
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, item.getShortlink());
                 } else {
                     // We couldn't get the shortlink, just use the original URL
-                    dialogIntent.putExtra(Intent.EXTRA_TEXT, urlToShare);
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, urlToShare);
                 }
             }
 
@@ -102,7 +102,7 @@ public class DemoActivity extends Activity {
             @Override
             public boolean onClick(DialogInterface dialog, ResolveInfo app, Intent shareIntent) {
                 // Called when the user makes a selection
-                Log.i("Loopy", "Share dialog clicked for " + app.activityInfo.name);
+                Log.i("Loopy", "Share dialog clicked for " + (app.activityInfo != null ? app.activityInfo.name : null));
 
                 // Return false bey default, or true to handle the click event yourself.
                 return false;
