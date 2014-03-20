@@ -48,7 +48,7 @@ shareButton.setOnClickListener(new View.OnClickListener() {
         Loopy.showShareDialog(context, "Share to...", urlToShare, shareIntent, new ShareDialogListener() {
 
             @Override
-            public void onLinkGenerated(Item item, Throwable error) {
+            public void onLinkGenerated(Item item, Intent shareIntent, Throwable error) {
                 if (error == null) {
                     // We got a tracking shortlink ok, set it in the body of the share (or wherever you like)
                     shareIntent.putExtra(Intent.EXTRA_TEXT, item.getShortlink());
@@ -103,9 +103,8 @@ shareButton.setOnClickListener(new View.OnClickListener() {
         // Call the "showShareDialog" endpoint to render the share dialog
         // The listener is used to set the trackable URL on to the share intent.
         Loopy.showShareDialog(context, "Share to...", item, shareIntent, new ShareDialogListener() {
-
             @Override
-            public void onLinkGenerated(Item item, Throwable error) {
+            public void onLinkGenerated(Item item, Intent shareIntent, Throwable error) {
                 if (error == null) {
                     // We got a tracking shortlink ok, set it in the body of the share (or wherever you like)
                     shareIntent.putExtra(Intent.EXTRA_TEXT, item.getShortlink());

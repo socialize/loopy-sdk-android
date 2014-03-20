@@ -21,7 +21,7 @@ public class Geo implements LocationListener  {
             LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
             lm.removeUpdates(this);
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             Logger.w(e);
         }
 	}
@@ -33,7 +33,7 @@ public class Geo implements LocationListener  {
             criteria.setAccuracy(Criteria.ACCURACY_COARSE);
             lm.requestLocationUpdates(lm.getBestProvider(criteria, true), 0, 0, this);
         }
-        catch (Exception e) {
+        catch (Throwable e) {
             Logger.w(e);
         }
 	}

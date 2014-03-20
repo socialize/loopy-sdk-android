@@ -15,7 +15,6 @@ import android.widget.ListView;
 import com.sharethis.loopy.sdk.ApiCallback;
 import com.sharethis.loopy.sdk.ApiClient;
 import com.sharethis.loopy.sdk.Config;
-import com.sharethis.loopy.sdk.Device;
 import com.sharethis.loopy.sdk.Item;
 import com.sharethis.loopy.sdk.Loopy;
 import com.sharethis.loopy.sdk.LoopyState;
@@ -33,7 +32,6 @@ import com.sharethis.loopy.sdk.ShareDialogRow;
 import com.sharethis.loopy.sdk.util.AppUtils;
 import com.sharethis.loopy.sdk.util.MockAppDataCache;
 import com.sharethis.loopy.test.util.Holder;
-import org.json.JSONObject;
 import org.mockito.Mockito;
 
 import java.util.Arrays;
@@ -175,7 +173,7 @@ public class LoopyTest extends LoopyAndroidTestCase {
         Mockito.verify(lp).create(context, apiKey, apiSecret);
         Mockito.verify(lp).start(context);
         Mockito.verify(lp).stop(context);
-        Mockito.verify(lp).destroy(context);
+        Mockito.verify(lp).destroy();
         Mockito.verify(cache).onCreate(context);
     }
 

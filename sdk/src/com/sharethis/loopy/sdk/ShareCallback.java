@@ -71,6 +71,7 @@ public abstract class ShareCallback extends ApiCallback {
      * @param context The current context.
      * @param intent The intent that was used for the share.
      */
+    @SuppressWarnings("unused")
     public final void reportShare(Context context, Intent intent) {
         if(item != null) {
             Loopy.reportShareFromIntent(context, item, intent);

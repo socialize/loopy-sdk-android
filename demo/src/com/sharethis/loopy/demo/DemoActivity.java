@@ -25,7 +25,7 @@ public class DemoActivity extends Activity {
         setContentView(R.layout.main);
 
         // Call onCreate and pass in your API key and secret
-        Loopy.onCreate(this, "c64fc5c7-2379-4249-8ccd-ef33d5bfac52", "_sandbox_key_sandbox");
+        Loopy.onCreate(this, "b8fef1da-88d6-4cbf-8af4-507215d671cd", "sharethis_loopy_demo");
 
         // The following code is just for this demo app
         ArrayAdapter<String> optionsAdapter = new ArrayAdapter<String>(this, R.layout.row, new String[]{
@@ -81,13 +81,13 @@ public class DemoActivity extends Activity {
         Loopy.showShareDialog(this, "Share to...", urlToShare, dialogIntent, new ShareDialogListener() {
 
             @Override
-            public void onLinkGenerated(Item item, Throwable error) {
+            public void onLinkGenerated(Item item, Intent shareIntent, Throwable error) {
                 if (error == null) {
                     // We got a tracking shortlink ok, set it in the body of the share (or wherever you like)
-                    dialogIntent.putExtra(Intent.EXTRA_TEXT, item.getShortlink());
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, item.getShortlink());
                 } else {
                     // We couldn't get the shortlink, just use the original URL
-                    dialogIntent.putExtra(Intent.EXTRA_TEXT, urlToShare);
+                    shareIntent.putExtra(Intent.EXTRA_TEXT, urlToShare);
                 }
             }
 
@@ -102,7 +102,7 @@ public class DemoActivity extends Activity {
             @Override
             public boolean onClick(DialogInterface dialog, ResolveInfo app, Intent shareIntent) {
                 // Called when the user makes a selection
-                Log.i("Loopy", "Share dialog clicked for " + app.activityInfo.name);
+                Log.i("Loopy", "Share dialog clicked for " + (app.activityInfo != null ? app.activityInfo.name : null));
 
                 // Return false bey default, or true to handle the click event yourself.
                 return false;
