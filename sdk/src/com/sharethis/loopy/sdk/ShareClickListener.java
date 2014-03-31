@@ -37,21 +37,29 @@ class ShareClickListener {
                     @Override
                     public void onSuccess(JSONObject result) {
                         // Launch the app with the data from the share
-                        shareIntent.setClassName(app.activityInfo.packageName, app.activityInfo.name);
-                        context.startActivity(shareIntent);
+                        launchShareIntent(context, app, shareIntent);
                     }
 
                     @Override
                     public void onError(Throwable e) {
                         Logger.e(e);
                         // Launch the app with the data from the share, even if there's an error
-                        shareIntent.setClassName(app.activityInfo.packageName, app.activityInfo.name);
-                        context.startActivity(shareIntent);
+                        launchShareIntent(context, app, shareIntent);
                     }
                 });
             } catch (Exception e) {
                 Logger.e(e);
+
+                // Launch the app with the data from the share, even if there's an error
+                launchShareIntent(context, app, shareIntent);
             }
+        }
+    }
+
+    void launchShareIntent(Context context, ResolveInfo app, Intent shareIntent) {
+        if (app.activityInfo != null) {
+            shareIntent.setClassName(app.activityInfo.packageName, app.activityInfo.name);
+            context.startActivity(shareIntent);
         }
     }
 
