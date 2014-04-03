@@ -24,12 +24,10 @@ public class ResourceLocator {
 
             in = context.getAssets().open(name);
 
-            if(in != null) {
-                if(Logger.isDebugEnabled()) {
-                    Logger.d("Found " +
-                            name +
-                            " in asset path");
-                }
+            if(Logger.isDebugEnabled()) {
+                Logger.d("Found " +
+                        name +
+                        " in asset path");
             }
         }
         catch (IOException ignore) {

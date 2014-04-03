@@ -51,7 +51,7 @@ Implementing Loopy |trade| with your app is a simple 4 step process:
 
         .. image:: images/as_6.png
 
-        Next, add the library to your **settings.gradle** file in your project (replace HellowWorld with your project name)
+        Next, add the library to your **settings.gradle** file in your project (replace HelloWorld with your project name)
 
         .. literalinclude:: ../snippets/snippets.txt
             :start-after: begin-snippet-3
