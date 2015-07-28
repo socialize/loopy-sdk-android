@@ -532,11 +532,13 @@ public class Loopy {
                             try {
                                 final String stdid = generateUUID();
 
-                                apiClient.installDirect(
-                                        config.getApiKey(),
-                                        config.getApiSecret(),
-                                        stdid,
-                                        null);
+                                // disable loopy installation due to discontinued Mashery account
+                                // should be uncommented if new endpoint is used for installations tracking
+                                // apiClient.installDirect(
+                                //         config.getApiKey(),
+                                //         config.getApiSecret(),
+                                //         stdid,
+                                //         null);
 
                                 session.getState().setStdid(stdid);
                                 session.getState().save(context);
