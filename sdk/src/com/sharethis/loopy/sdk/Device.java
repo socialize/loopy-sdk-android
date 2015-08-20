@@ -87,7 +87,8 @@ public class Device {
     boolean isOnWifi(Context context) {
         ConnectivityManager connManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo mWifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        return mWifi.isConnected();
+        return mWifi != null
+                && mWifi.isConnectedOrConnecting();
     }
 
     String getCarrier(Context context) {

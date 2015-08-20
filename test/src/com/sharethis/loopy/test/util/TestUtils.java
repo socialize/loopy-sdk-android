@@ -102,8 +102,8 @@ public class TestUtils {
 
     public static boolean isMobileDataEnabled(Context context) {
         ConnectivityManager conMgr =  (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        return conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
-                || conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING;
+        return (conMgr.getNetworkInfo(0) != null && conMgr.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED)
+							|| (conMgr.getNetworkInfo(1) != null && conMgr.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTING);
     }
 
     public static void disableNetworkAndWait(Context context, long timeout) throws Exception {
