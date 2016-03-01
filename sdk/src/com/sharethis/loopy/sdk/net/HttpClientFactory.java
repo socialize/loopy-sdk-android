@@ -18,6 +18,8 @@ import org.apache.http.protocol.HTTP;
 
 import java.security.KeyStore;
 
+import javax.net.ssl.SSLSocketFactory;
+
 /**
  * @author Jason Polites
  */
@@ -57,17 +59,7 @@ public class HttpClientFactory {
 
             SchemeRegistry registry = new SchemeRegistry();
             registry.register(new Scheme("http", PlainSocketFactory.getSocketFactory(), 80));
-
-            try {
-                KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-                trustStore.load(null, null);
-                SSLSocketFactory sf = new NaiveSSLSocketFactory(trustStore);
-                sf.setHostnameVerifier(SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER);
-                registry.register(new Scheme("https", sf, 443));
-            }
-            catch (Exception e) {
-                Logger.e(e);
-            }
+            registry.register(new Scheme("https", SSLSocketFactory.getSocketFactory(), 443));
 
             connectionManager = new ThreadSafeClientConnManager(params, registry);
 
