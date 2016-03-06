@@ -1,6 +1,5 @@
 package com.sharethis.loopy.sdk.net;
 
-import com.sharethis.loopy.sdk.Logger;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ClientConnectionManager;
@@ -15,10 +14,6 @@ import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
-
-import java.security.KeyStore;
-
-import javax.net.ssl.SSLSocketFactory;
 
 /**
  * @author Jason Polites
